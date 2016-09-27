@@ -1,2 +1,3 @@
 /proyectoGrado/settings/local.py
 .vagrant/
+__pycache__/

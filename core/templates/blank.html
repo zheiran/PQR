@@ -33,7 +33,7 @@
 
 </head>
 
-<body>
+<body ng-app="pqrApp" ng-controller="pqrController">
 
     <div id="wrapper">
 
@@ -45,6 +45,7 @@
 
          <!-- Page Content -->
         <div id="page-wrapper">
+        {% block content %}{% endblock %}
         </div>
        
 
@@ -52,7 +53,7 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="{% static "lib/admintpl/bower_components/jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static "lib/admintpl/bower_components/jquery/dist/jquery.min.js" %}"></script>|
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static "lib/admintpl/bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
@@ -68,6 +69,8 @@
 
     <!-- Base bootstrap angular lib -->
     <script src="{% static "js/ui-bootstrap-tpls-2.1.4.min.js" %}"></script>
+
+    {% include "login/login.js" %}
 
 </body>
 

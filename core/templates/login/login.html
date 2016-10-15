@@ -1,7 +1,16 @@
-{% extends "blank.html" %}
-{% block content %}
-<content>
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "login/login.css" %}
+{% endblock%}
+
+{% block contenido %}
+<div ng-controller="loginController">
 	<p>[[mensaje]]</p>
 	<br>hola mundo
-</content>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "login/login.js" %}
 {% endblock%}

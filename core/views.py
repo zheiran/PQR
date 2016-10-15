@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 def login(request):
-  return render(request, "login/login.html", {})
+  return render(request, "login/index.html", {})
 
 def index(request):
-  return render(request, "blank.html", {})
+  return render(request, "admin/usuarios/index.html", {})

@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'proyectoGrado.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'proyectoGrado',
+        'NAME': 'pqr_proyect',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',  # Set to empty string for localhost.
@@ -204,3 +204,7 @@ LOGGING = {
         },
     }
 }
+# Redirecciona cuando el login es correcto
+LOGIN_REDIRECT_URL = "/bandejaDeEntrada"
+# Redirecciona cuando el login no es correcto
+LOGIN_URL = '/'

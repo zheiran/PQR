@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'proyectoGrado.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'pqr_proyect',
+        'NAME': 'proyectoGrado',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',  # Set to empty string for localhost.

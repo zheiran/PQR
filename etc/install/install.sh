@@ -30,7 +30,7 @@ apt-get install -y git
 if ! command -v psql; then
     apt-get install -y postgresql libpq-dev
     # Create vagrant pgsql superuser
-    su - postgres -c "createuser -s admin"
+    su - postgres -c "createuser -s vagrant"
 fi
 
 # virtualenv global setup
@@ -47,7 +47,7 @@ cp -p $PROJECT_DIR/etc/install/bashrc /home/vagrant/.bashrc
 # ---
 
 # postgresql setup for project
-su - vagrant -c "createdb pqr_proyect"
+su - vagrant -c "createdb $DB_NAME"
 
 # virtualenv setup for project
 su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR --python=/usr/bin/python3.4 && \

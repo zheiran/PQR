@@ -1,16 +1,16 @@
 {% extends "base/base.html" %}
 
 {% block contenido_estilos %}
-{% include "login/login.css" %}
+{% include "admin/usuarios/estilos.css" %}
 {% endblock%}
 
 {% block contenido %}
-<div ng-controller="loginController">
+<div ng-controller="algoController">
 	<p>[[mensaje]]</p>
 	<br>hola mundo
 </div>
 {% endblock%}
 
 {% block contenido_javascript %}
-{% include "login/login.js" %}
+{% include "admin/usuarios/scripts.js" %}
 {% endblock%}

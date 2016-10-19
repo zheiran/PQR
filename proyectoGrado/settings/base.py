@@ -92,8 +92,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'pqr_proyect',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': '',  # Set to empty string for localhost.
         'PORT': '',  # Set to empty string for default.
         'CONN_MAX_AGE': 600,  # number of seconds database connections should persist for
@@ -204,3 +204,7 @@ LOGGING = {
         },
     }
 }
+# Redirecciona cuando el login es correcto
+LOGIN_REDIRECT_URL = "/bandejaDeEntrada"
+# Redirecciona cuando el login no es correcto
+LOGIN_URL = '/'

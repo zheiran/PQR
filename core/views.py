@@ -90,8 +90,10 @@ def cerrarSesion(request):
 
 @login_required
 def workflowList(request):
-    workflow = Flujo_de_trabajo.objects.all()
-    return render(request, "admin/workflowList/workflowList.html", {})
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo JOIN auth_user ON modelos_flujo_de_trabajo.usuario_id = auth_user.id")
+    content = dictfetchall(cursor)
+    return render(request, "admin/workflowList/workflowList.html", {'workflow': content})
 
 @login_required
 def nuevoWorkflow(request):
@@ -110,6 +112,7 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+    
 @login_required
 def solicitudesAgentes(request):
     cursor = connection.cursor()

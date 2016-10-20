@@ -6,7 +6,7 @@
 
 {% block contenido %}
 <div ng-controller="nuevoWorkflowController">
-	{{workflow}}
+<span ng-repeat="work in workflow track by $index">[[work.fields.nombre]]</span>
 </div>
 {% endblock%}
 

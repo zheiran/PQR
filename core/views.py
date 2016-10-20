@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.template.context import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
 from .forms import RegistroForm
 from modelos.models import Flujo_de_trabajo, Pasos
@@ -88,10 +89,10 @@ def cerrarSesion(request):
 
 @login_required
 def workflowList(request):
-    workflow = Flujo_de_trabajo.objects.all();
+    workflow = Flujo_de_trabajo.objects.all()
     return render(request, "admin/workflowList/workflowList.html", {})
 
 @login_required
 def nuevoWorkflow(request):
-    workflow = Flujo_de_trabajo.objects.all();
+    workflow = serializers.serialize("json", Flujo_de_trabajo.objects.all())
     return render(request, "admin/nuevoWorkflow/index.html", {'workflow': workflow})

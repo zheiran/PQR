@@ -1,9 +1,14 @@
 {% extends 'base/base.html' %}
+
+{% block contenido_estilos %}
+{% include "admin/workflowList/estilos.css" %}
+{% endblock%}
+
 {% block contenido %}
-    <div class="row">
+    <div class="row" ng-controller="workflowListController">
         <h2>Administrar Workflow</h2>
 
-        <a href="{% url 'nuevo_workflow' %}" class="btn btn-info">Nuevo</a>
+        <a href="{% url 'nuevoWorkflow' %}" class="btn btn-info">Nuevo</a>
         <table>
             <tr ng-repeat="proceso in procesos">
                 <th>Nombre</th>
@@ -23,3 +28,7 @@
         </table>> 
     </div>
 {% endblock %}
+
+{% block contenido_javascript %}
+{% include "admin/workflowList/scripts.js" %}
+{% endblock%}

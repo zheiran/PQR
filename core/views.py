@@ -44,9 +44,9 @@ def administrarUsuarios(request):
             # Save new user attributes
             user.save()
             return HttpResponseRedirect(reverse('administrarUsuarios'))  # Redirect after POST
-    else:
-        form = RegistroForm()
-  	return render(request, "admin/usuarios/index.html", {'form': form})
+        else:
+            form = RegistroForm()
+    return render(request, "admin/usuarios/index.html", {'form': form})
 
 def registro(request):
     if request.method == 'POST':  # If the form has been submitted...
@@ -88,3 +88,7 @@ def cerrarSesion(request):
 @login_required
 def workflowList(request):
     return render(request, "admin/workflowList/workflowList.html", {})
+
+@login_required
+def nuevoWorkflow(request):
+    return HttpResponseRedirect(reverse('workflowList'))

@@ -4,10 +4,10 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.inicio, name='inicio'),
-    url(r'^bandejaDeEntrada/$', views.index, name='index'),
     url(r'^registro/$', views.registro, name='registro'),
     url(r'^solicitudes/$', views.home, name='home'),
     url(r'^cerrarSesion/$', views.cerrarSesion, name='cerrarSesion'),
-    url(r'^Administracion/Usuarios/$', views.administrarUsuarios, name='administrarUsuarios'),
-    url(r'^workflowList/$', views.workflowList, name='workflowList'),
+    url(r'^administracion/usuarios/$', views.administrarUsuarios, name='administrarUsuarios'),
+    url(r'^administracion/workflow/list/$', views.workflowList, name='workflowList'),
+    url(r'^administracion/workflow/nuevo/$', views.nuevoWorkflow, name='nuevoWorkflow'),
 ]

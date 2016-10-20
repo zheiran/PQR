@@ -25,8 +25,28 @@ def inicio(request):
     return render(request, "login/index.html", {'form': form})
 
 @login_required
-def index(request):
-  	return render(request, "admin/usuarios/index.html", {})
+def administrarUsuarios(request):
+    if request.method == 'POST':  # If the form has been submitted...
+        form = RegistroForm(request.POST)  # A form bound to the POST data
+        if form.is_valid():  # All validation rules pass
+            # Process the data in form.cleaned_data
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            email = form.cleaned_data["email"]
+            first_name = form.cleaned_data["first_name"]
+            last_name = form.cleaned_data["last_name"]
+            # At this point, user is a User object that has already been saved
+            # to the database. You can continue to change its attributes
+            # if you want to change other fields.
+            user = User.objects.create_user(username, email, password)
+            user.first_name = first_name
+            user.last_name = last_name
+            # Save new user attributes
+            user.save()
+            return HttpResponseRedirect(reverse('administrarUsuarios'))  # Redirect after POST
+    else:
+        form = RegistroForm()
+  	return render(request, "admin/usuarios/index.html", {'form': form})
 
 def registro(request):
     if request.method == 'POST':  # If the form has been submitted...

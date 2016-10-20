@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^administracion/usuarios/$', views.administrarUsuarios, name='administrarUsuarios'),
     url(r'^administracion/workflow/list/$', views.workflowList, name='workflowList'),
     url(r'^administracion/workflow/nuevo/$', views.nuevoWorkflow, name='nuevoWorkflow'),
+    url(r'^administracion/solicitudes/agente/$', views.solicitudesAgentes, name='solicitudesAgente'),
 ]

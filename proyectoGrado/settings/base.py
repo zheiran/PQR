@@ -92,9 +92,9 @@ WSGI_APPLICATION = 'proyectoGrado.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'pqr_proyect',
-        'USER': '',
-        'PASSWORD': '',
+        'NAME': 'proyectoGrado',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
         'HOST': '',  # Set to empty string for localhost.
         'PORT': '',  # Set to empty string for default.
         'CONN_MAX_AGE': 600,  # number of seconds database connections should persist for

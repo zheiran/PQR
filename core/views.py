@@ -8,9 +8,10 @@ from django.template.context import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.db import connection
 
 from .forms import RegistroForm
-from modelos.models import Flujo_de_trabajo, Pasos
+from modelos.models import Flujo_de_trabajo, Pasos, Solicitudes
 
 def inicio(request):
     if request.method == 'POST':
@@ -96,3 +97,12 @@ def workflowList(request):
 def nuevoWorkflow(request):
     workflow = serializers.serialize("json", Flujo_de_trabajo.objects.all())
     return render(request, "admin/nuevoWorkflow/index.html", {'workflow': workflow})
+
+@login_required
+def solicitudesAgentes(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT solicitudes.id, flujo.nombre FROM modelo_solicitudes solicitudes INNER JOIN modelo_flujo_de_trabajo flujo ON solicitudes.lujo_id = flujo.id" % (request.POST.get('solicitudes','')))
+    solicitudes = cursor.fetchall()
+    return render(request, "admin/solicitudes/agente.html", {'solicitud': solicitudes})
+
+

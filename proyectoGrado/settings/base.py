@@ -35,6 +35,7 @@ ADMINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'modelos',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

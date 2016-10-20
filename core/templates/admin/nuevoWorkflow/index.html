@@ -6,7 +6,24 @@
 
 {% block contenido %}
 <div class="row" ng-controller="nuevoWorkflowController">
-<span ng-repeat="usuario in usuarios track by $index">[[usuario.nombre]]</span>
+	<h2>Nuevo workflow</h2>
+	<form method="post" action="{% url 'workflowList' %}">
+	{% csrf_token %}
+		<div class="form-group col-md-6">
+	    	<label for="usuario">Responsable: </label>
+	    	<select id="usuario" ng-model="usuario" name="usuario" class="form-control">
+	    		<option value="">--Selecciona un responsable--</option>
+				<option ng-repeat="usuario in usuarios" value="[[usuario.id]]">[[usuario.first_name]] [[usuario.last_name]]</option>
+			</select>
+	  	</div>
+	  	<div class="form-group col-md-6">
+	    	<label for="nombre">Nombre: </label>
+	    	<input type="text" name="nombre" id="nombre" class="form-control">
+	  	</div>
+	  	<div class="form-group col-md-6">
+	    	<button class="btn btn-success" type="submit">Guardar</button>
+	  	</div>
+  	</form>
 </div>
 {% endblock%}
 

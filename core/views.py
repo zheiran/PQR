@@ -98,10 +98,14 @@ def workflowList(request):
 @login_required
 def nuevoWorkflow(request):
     if request.method == 'POST':
+        usuario = request.POST['usuario'];
+        nombre = request.POST['nombre'];
+        workflow = Flujo_de_trabajo(usuario_id = usuario, nombre = nombre, publicado = False)
+        workflow.save()
         return HttpResponseRedirect(reverse('nuevoWorkflow'))  # Redirect after POST
     else:
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM modelos_flujo_de_trabajo")
+        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
         usuarios = dictfetchall(cursor)
     return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios})
 
@@ -119,5 +123,3 @@ def solicitudesAgentes(request):
     cursor.execute("SELECT solicitudes.id, flujo.nombre FROM modelo_solicitudes solicitudes INNER JOIN modelo_flujo_de_trabajo flujo ON solicitudes.lujo_id = flujo.id" % (request.POST.get('solicitudes','')))
     solicitudes = cursor.fetchall()
     return render(request, "admin/solicitudes/agente.html", {'solicitud': solicitudes})
-
-

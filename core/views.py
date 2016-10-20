@@ -5,12 +5,26 @@ from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.context import RequestContext
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegistroForm
 
-def login(request):
-  	return render(request, "login/index.html", {})
+def inicio(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            return HttpResponseRedirect(reverse('inicio'))
+    else:
+        form = RegistroForm()
+    return render(request, "login/index.html", {'form': form})
 
+@login_required
 def index(request):
   	return render(request, "admin/usuarios/index.html", {})
 
@@ -36,8 +50,17 @@ def registro(request):
             # Save new user attributes
             user.save()
  
-            return HttpResponseRedirect(reverse('login'))  # Redirect after POST
+            return HttpResponseRedirect(reverse('inicio'))  # Redirect after POST
     else:
         form = RegistroForm()
 
     return render(request, "login/registro.html", {'form': form})
+
+@login_required
+def home(request):
+    return render(request, "solicitudes/index.html", {})
+
+@login_required
+def cerrarSesion(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('inicio'))

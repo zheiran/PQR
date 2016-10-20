@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from .forms import RegistroForm
+from modelos.models import Flujo_de_trabajo, Pasos
 
 def inicio(request):
     if request.method == 'POST':
@@ -87,8 +88,10 @@ def cerrarSesion(request):
 
 @login_required
 def workflowList(request):
+    workflow = Flujo_de_trabajo.objects.all();
     return render(request, "admin/workflowList/workflowList.html", {})
 
 @login_required
 def nuevoWorkflow(request):
-    return HttpResponseRedirect(reverse('workflowList'))
+    workflow = Flujo_de_trabajo.objects.all();
+    return render(request, "admin/nuevoWorkflow/index.html", {'workflow': workflow})

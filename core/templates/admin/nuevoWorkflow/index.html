@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "admin/nuevoWorkflow/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+<div ng-controller="nuevoWorkflowController">
+	{{workflow}}
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "admin/nuevoWorkflow/scripts.js" %}
+{% endblock%}

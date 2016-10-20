@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^registro/$', views.registro, name='registro'),
     url(r'^solicitudes/$', views.home, name='home'),
     url(r'^cerrarSesion/$', views.cerrarSesion, name='cerrarSesion'),
+    url(r'^workflowList/$', views.workflowList, name='workflowList'),
 ]

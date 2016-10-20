@@ -64,3 +64,7 @@ def home(request):
 def cerrarSesion(request):
     logout(request)
     return HttpResponseRedirect(reverse('inicio'))
+
+@login_required
+def workflowList(request):
+    return render(request, "admin/workflowList/workflowList.html", {})

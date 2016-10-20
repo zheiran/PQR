@@ -95,9 +95,21 @@ def workflowList(request):
 
 @login_required
 def nuevoWorkflow(request):
-    workflow = serializers.serialize("json", Flujo_de_trabajo.objects.all())
-    return render(request, "admin/nuevoWorkflow/index.html", {'workflow': workflow})
+    if request.method == 'POST':
+        return HttpResponseRedirect(reverse('nuevoWorkflow'))  # Redirect after POST
+    else:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM modelos_flujo_de_trabajo")
+        usuarios = dictfetchall(cursor)
+    return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios})
 
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 @login_required
 def solicitudesAgentes(request):
     cursor = connection.cursor()

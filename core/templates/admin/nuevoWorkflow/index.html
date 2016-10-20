@@ -5,8 +5,8 @@
 {% endblock%}
 
 {% block contenido %}
-<div ng-controller="nuevoWorkflowController">
-<span ng-repeat="work in workflow track by $index">[[work.fields.nombre]]</span>
+<div class="row" ng-controller="nuevoWorkflowController">
+<span ng-repeat="usuario in usuarios track by $index">[[usuario.nombre]]</span>
 </div>
 {% endblock%}
 

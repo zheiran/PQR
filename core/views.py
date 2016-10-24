@@ -90,10 +90,17 @@ def cerrarSesion(request):
 
 @login_required
 def workflowList(request):
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo JOIN auth_user ON modelos_flujo_de_trabajo.usuario_id = auth_user.id")
-    content = dictfetchall(cursor)
-    return render(request, "admin/workflowList/workflowList.html", {'workflow': content})
+    if request.method == 'POST':
+        usuario = request.POST['usuario'];
+        nombre = request.POST['nombre'];
+        workflow = Flujo_de_trabajo(usuario_id = usuario, nombre = nombre, publicado = False)
+        workflow.save()
+        return HttpResponseRedirect(reverse('nuevoWorkflow'))  # Redirect after POST
+    else:
+        cursor = connection.cursor()
+        cursor.execute("SELECT f.id, u.first_name, u.last_name, f.nombre, f.publicado  FROM modelos_flujo_de_trabajo f INNER JOIN auth_user u ON u.id = f.usuario_id")
+        procesos = dictfetchall(cursor)
+    return render(request, "admin/workflowList/workflowList.html", {'procesos': procesos})
 
 @login_required
 def nuevoWorkflow(request):
@@ -102,7 +109,7 @@ def nuevoWorkflow(request):
         nombre = request.POST['nombre'];
         workflow = Flujo_de_trabajo(usuario_id = usuario, nombre = nombre, publicado = False)
         workflow.save()
-        return HttpResponseRedirect(reverse('nuevoWorkflow'))  # Redirect after POST
+        return HttpResponseRedirect(reverse('workflowList'))  # Redirect after POST
     else:
         cursor = connection.cursor()
         cursor.execute("SELECT id, first_name, last_name FROM auth_user")

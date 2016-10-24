@@ -9,23 +9,27 @@
         <h2>Administrar Workflow</h2>
 
         <a href="{% url 'nuevoWorkflow' %}" class="btn btn-info">Nuevo</a>
-        <br>
         <table class="table">
-            <tr>
-                <th>Nombre</th>
-                <th>Usuario Creador</th>
-                <th>Acciones</th>
-            </tr>
-            <tr ng-repeat="work in workflow track by $index">
-                <td>[[work.nombre]]</td>
-                <td>[[work.username]]</td>
-                <td>
-                    <a href="" class="btn btn-info" ng-click="edit(work.id)">Editar</a>
-                    <a href="" class="btn btn-info" ng-click="disable(work.id)">Anular</a>
-                </td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Responsable</th>
+                    <th>Publicado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="proceso in procesos">
+                    <td>[[proceso.nombre]]</td>
+                    <td>[[proceso.first_name]] [[proceso.last_name]]</td>
+                    <td>[[proceso.publicado]]</td>
+                    <td>
+                        <a href="" class="btn btn-info" ng-click="edit(proceso.id)">Editar</a>
+                        <a href="" class="btn btn-info" ng-click="disable(proceso.id)">Anular</a>
+                    </td>
+                </tr>
+            </tbody>
         </table>
-
     </div>
 {% endblock %}
 

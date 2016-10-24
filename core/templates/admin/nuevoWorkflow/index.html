@@ -7,7 +7,7 @@
 {% block contenido %}
 <div class="row" ng-controller="nuevoWorkflowController">
 	<h2>Nuevo workflow</h2>
-	<form method="post" action="{% url 'workflowList' %}">
+	<form method="post" action="{% url 'nuevoWorkflow' %}">
 	{% csrf_token %}
 		<div class="form-group col-md-6">
 	    	<label for="usuario">Responsable: </label>

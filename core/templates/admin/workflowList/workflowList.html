@@ -14,7 +14,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Responsable</th>
-                    <th>Publicado</th>
+                    <th>Activo</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -26,8 +26,9 @@
                         <label ng-if="!proceso.publicado">No</label></td>
                     <td>
                         <a href="" class="btn btn-warning" ng-click="pasos(proceso.id)">Pasos</a>
-                        <a href="" class="btn btn-info" ng-click="edit(proceso.id)">Editar</a>
-                        <a href="" class="btn btn-danger" ng-click="disable(proceso.id)">Anular</a>
+                        <a href="" class="btn btn-info"  ng-click="edit(proceso.id)">Editar</a>
+                        <a href="" class="btn btn-danger" ng-if="!proceso.publicado" ng-click="cambiarEstado(proceso.id,false)">Anular</a>
+                        <a href="" class="btn btn-success" ng-if="proceso.publicado" ng-click="cambiarEstado(proceso.id,true)">Habilitar</a>
                     </td>
                 </tr>
             </tbody>

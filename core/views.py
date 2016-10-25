@@ -116,6 +116,13 @@ def nuevoWorkflow(request):
         usuarios = dictfetchall(cursor)
     return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios})
 
+@login_required
+def verPasos(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT p.id, f.nombre as proceso, u.first_name, u.last_name, p.numero, p.nombre as paso, p.duracion FROM modelos_pasos p INNER JOIN modelos_flujo_de_trabajo f ON p.flujos_id = f.id INNER JOIN auth_user u ON u.id = p.usuario_id")
+    pasos = dictfetchall(cursor)
+    return render(request, "admin/pasos/index.html", {'pasos': pasos})
+
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]

@@ -117,11 +117,14 @@ def nuevoWorkflow(request):
     return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios})
 
 @login_required
-def verPasos(request):
+def verPasos(request, id):
     cursor = connection.cursor()
-    cursor.execute("SELECT p.id, f.nombre as proceso, u.first_name, u.last_name, p.numero, p.nombre as paso, p.duracion FROM modelos_pasos p INNER JOIN modelos_flujo_de_trabajo f ON p.flujos_id = f.id INNER JOIN auth_user u ON u.id = p.usuario_id")
+    cursor.execute("SELECT p.id, f.nombre as proceso, u.first_name, u.last_name, p.numero, p.nombre as paso, p.duracion FROM modelos_pasos p INNER JOIN modelos_flujo_de_trabajo f ON p.flujos_id = f.id INNER JOIN auth_user u ON u.id = p.usuario_id WHERE f.id = %s", [id])
     pasos = dictfetchall(cursor)
-    return render(request, "admin/pasos/index.html", {'pasos': pasos})
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [id])
+    proceso = dictfetchall(cursor)
+    return render(request, "admin/pasos/index.html", {'pasos': pasos, 'proceso': proceso})
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -137,3 +140,29 @@ def solicitudesAgentes(request):
     cursor.execute("SELECT solicitudes.id, flujo.nombre FROM modelo_solicitudes solicitudes INNER JOIN modelo_flujo_de_trabajo flujo ON solicitudes.lujo_id = flujo.id" % (request.POST.get('solicitudes','')))
     solicitudes = cursor.fetchall()
     return render(request, "admin/solicitudes/agente.html", {'solicitud': solicitudes})
+
+@login_required
+def nuevoPaso(request, id):
+    if request.method == 'POST':
+        usuario = request.POST['usuario'];
+        nombre = request.POST['nombre'];
+        numero = request.POST['numero'];
+        duracion = request.POST['duracion'];
+        paso = Pasos(usuario_id = usuario, nombre = nombre, numero = numero, duracion = duracion, flujos_id = id)
+        paso.save()
+        return HttpResponseRedirect(reverse('verPasos', args=[id]))  # Redirect after POST
+    else:
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        usuarios = dictfetchall(cursor)
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [id])
+        proceso = dictfetchall(cursor)
+    return render(request, "admin/pasos/nuevo/index.html", {'usuarios': usuarios, 'proceso': proceso})
+
+@login_required
+def eliminarPaso(request, id):
+    pasoid = request.POST['id'];
+    paso = Pasos.objects.get(id=pasoid)
+    paso.delete()
+    return HttpResponseRedirect(reverse('verPasos', args=[id]))  # Redirect after POST

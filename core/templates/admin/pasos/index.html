@@ -7,7 +7,8 @@
 {% block contenido %}
 <div class="row" ng-controller="pasosController">
 	<h2>Pasos</h2>
-	<a href="" class="btn btn-info">Nuevo</a>
+	{% csrf_token %}
+	<a href="" class="btn btn-info" ng-click="nuevo()">Nuevo</a>
         <table class="table">
             <thead>
                 <tr>
@@ -19,15 +20,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="paso in pasos">
-                    <td>[[paso.nombre]]</td>
+                <tr ng-repeat="paso in pasos|orderBy:'numero'">
+                    <td>[[paso.proceso]]</td>
                     <td>[[paso.first_name]] [[paso.last_name]]</td>
                     <td>[[paso.numero]]</td>
                     <td>[[paso.paso]]</td>
                     <td>[[paso.duracion]]</td>
                     <td>
                         <a href="" class="btn btn-info" ng-click="edit(paso.id)">Editar</a>
-                        <a href="" class="btn btn-danger" ng-click="disable(paso.id)">Eliminar</a>
+                        <a href="" class="btn btn-danger" ng-click="eliminar(paso.id)">Eliminar</a>
                     </td>
                 </tr>
             </tbody>

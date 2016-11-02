@@ -1,32 +1,28 @@
 {% extends "base/base.html" %}
 
-{% block contenido_estilos %}
-{% include "admin/pasos/nuevo/estilos.css" %}
-{% endblock%}
-
 {% block contenido %}
-<div class="row" ng-controller="nuevoPasoController">
-	<h2>Nuevo paso para el proceso "[[proceso[0].nombre]]"</h2>
-    <form method="post" name="nuevoPaso">
+<div class="row" ng-controller="editarPasoController">
+	<h2>Paso "[[paso[0].nombre]]" para el proceso "[[proceso[0].nombre]]"</h2>
+    <form method="post" name="editarPaso">
         {% csrf_token %}
         <div class="form-group col-md-6">
             <label for="usuario">Agente: </label>
-            <select id="usuario" ng-model="usuario" name="usuario" class="form-control" required>
+            <select id="usuario" ng-model="usuario" name="usuario" class="form-control" ng-init="usuario = paso[0].usuario_id.toString()" required>
                 <option value="">--Selecciona un responsable--</option>
                 <option ng-repeat="usuario in usuarios" value="[[usuario.id]]">[[usuario.first_name]] [[usuario.last_name]]</option>
             </select>
         </div>
         <div class="form-group col-md-6">
             <label for="nombre">Nombre: </label>
-            <input type="text" name="nombre" id="nombre" class="form-control" required>
+            <input type="text" name="nombre" id="nombre" ng-model="nombre" class="form-control" ng-init="nombre = paso[0].nombre" required>
         </div>
         <div class="form-group col-md-6">
             <label for="numero">Número: </label>
-            <input type="number" name="numero" id="numero" class="form-control" max="10" min="1" required>
+            <input type="number" name="numero" id="numero" ng-model="numero" class="form-control" max="10" min="1" ng-init="numero = paso[0].numero" required>
         </div>
         <div class="form-group col-md-6">
             <label for="duracion">Duracion: </label>
-            <input type="number" name="duracion" id="duracion" class="form-control" max="10" min="1" required>
+            <input type="number" name="duracion" id="duracion" ng-model="duracion" class="form-control" max="10" min="1" ng-init="duracion = paso[0].duracion" required>
         </div>
         <div class="form-group col-md-6">
             <button class="btn btn-success" type="submit" ng-click="guardar()">Guardar</button>
@@ -36,5 +32,5 @@
 {% endblock%}
 
 {% block contenido_javascript %}
-{% include "admin/pasos/nuevo/scripts.js" %}
+{% include "admin/pasos/editar/scripts.js" %}
 {% endblock%}

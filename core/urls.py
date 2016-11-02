@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^administracion/solicitudes/agente/$', views.solicitudesAgentes, name='solicitudesAgente'),
     url(r'^administracion/workflow/(?P<id>\d+)/pasos/$', views.verPasos, name='verPasos'),
     url(r'^administracion/workflow/(?P<id>\d+)/pasos/nuevo$', views.nuevoPaso, name='nuevoPaso'),
-    url(r'^administracion/workflow/(?P<id>\d+)/pasos/borrar$', views.eliminarPaso, name='eliminarPaso'),
+    url(r'^administracion/workflow/(?P<idWorkflow>\d+)/pasos/borrar/(?P<idPaso>\d+)$', views.eliminarPaso, name='eliminarPaso'),
+    url(r'^administracion/workflow/(?P<idWorkflow>\d+)/pasos/editar/(?P<idPaso>\d+)$', views.editarPaso, name='editarPaso'),
 ]

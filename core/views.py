@@ -161,8 +161,34 @@ def nuevoPaso(request, id):
     return render(request, "admin/pasos/nuevo/index.html", {'usuarios': usuarios, 'proceso': proceso})
 
 @login_required
-def eliminarPaso(request, id):
-    pasoid = request.POST['id'];
-    paso = Pasos.objects.get(id=pasoid)
+def eliminarPaso(request, idWorkflow, idPaso):
+    paso = Pasos.objects.get(id=int(idPaso))
     paso.delete()
-    return HttpResponseRedirect(reverse('verPasos', args=[id]))  # Redirect after POST
+    return HttpResponseRedirect(reverse('verPasos', args=[idWorkflow]))
+
+@login_required
+def editarPaso(request, idWorkflow, idPaso):
+    if request.method == 'POST':
+        usuario = request.POST['usuario'];
+        nombre = request.POST['nombre'];
+        numero = request.POST['numero'];
+        duracion = request.POST['duracion'];
+        paso = Pasos.objects.get(id=int(idPaso))
+        paso.usuario_id = usuario
+        paso.nombre = nombre
+        paso.numero = numero
+        paso.duracion = duracion
+        paso.flujos_id = idWorkflow
+        paso.save()
+        return HttpResponseRedirect(reverse('verPasos', args=[idWorkflow]))  # Redirect after POST
+    else:
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        usuarios = dictfetchall(cursor)
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [idWorkflow])
+        proceso = dictfetchall(cursor)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM modelos_pasos WHERE id = %s", [idPaso])
+        paso = dictfetchall(cursor)
+    return render(request, "admin/pasos/editar/index.html", {'usuarios': usuarios, 'proceso': proceso, 'paso': paso})

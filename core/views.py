@@ -1,6 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
@@ -27,30 +27,6 @@ def inicio(request):
         form = RegistroForm()
     return render(request, "login/index.html", {'form': form})
 
-@login_required
-def administrarUsuarios(request):
-    if request.method == 'POST':  # If the form has been submitted...
-        form = RegistroForm(request.POST)  # A form bound to the POST data
-        if form.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            email = form.cleaned_data["email"]
-            first_name = form.cleaned_data["first_name"]
-            last_name = form.cleaned_data["last_name"]
-            # At this point, user is a User object that has already been saved
-            # to the database. You can continue to change its attributes
-            # if you want to change other fields.
-            user = User.objects.create_user(username, email, password)
-            user.first_name = first_name
-            user.last_name = last_name
-            # Save new user attributes
-            user.save()
-            return HttpResponseRedirect(reverse('administrarUsuarios'))  # Redirect after POST
-        else:
-            form = RegistroForm()
-    return render(request, "admin/usuarios/index.html", {'form': form})
-
 def registro(request):
     if request.method == 'POST':  # If the form has been submitted...
         form = RegistroForm(request.POST)  # A form bound to the POST data
@@ -62,16 +38,18 @@ def registro(request):
             email = form.cleaned_data["email"]
             first_name = form.cleaned_data["first_name"]
             last_name = form.cleaned_data["last_name"]
- 
-            # At this point, user is a User object that has already been saved
-            # to the database. You can continue to change its attributes
-            # if you want to change other fields.
             user = User.objects.create_user(username, email, password)
             user.first_name = first_name
             user.last_name = last_name
- 
-            # Save new user attributes
             user.save()
+            grupo = Group.objects.filter(name="Estudiante")
+            if grupo.exists():
+                print(grupo)
+            else:
+                grupo = Group(name="Estudiante")
+                grupo.save()
+            user = User.objects.get(pk=user.id)
+            user.groups.add(grupo[0])
  
             return HttpResponseRedirect(reverse('inicio'))  # Redirect after POST
     else:
@@ -192,3 +170,76 @@ def editarPaso(request, idWorkflow, idPaso):
         cursor.execute("SELECT * FROM modelos_pasos WHERE id = %s", [idPaso])
         paso = dictfetchall(cursor)
     return render(request, "admin/pasos/editar/index.html", {'usuarios': usuarios, 'proceso': proceso, 'paso': paso})
+
+@login_required
+def verUsuarios(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id")
+    usuarios = dictfetchall(cursor)
+    return render(request, "admin/usuarios/index.html", {'usuarios': usuarios})
+
+@login_required
+def nuevoUsuario(request):
+    if request.method == 'POST':
+        username = request.POST["username"]
+        password = request.POST["password"]
+        email = request.POST["email"]
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        grupo_get = request.POST["grupo"]
+        user = User.objects.create_user(username, email, password)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+        grupo = Group.objects.filter(name=str(grupo_get))
+        user = User.objects.get(pk=user.id)
+        if grupo.exists():
+            user.groups.add(grupo[0])
+        else:
+            grupo = Group(name=grupo_get)
+            grupo.save()
+            user.groups.add(grupo)
+        return HttpResponseRedirect(reverse('verUsuarios'))
+    else:
+        return render(request, "admin/usuarios/nuevo/index.html", {})
+
+@login_required
+def editarUsuario(request, idUsuario):
+    if request.method == 'POST':
+        username = request.POST["username"]
+        password = request.POST["password"]
+        email = request.POST["email"]
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        grupo_get = request.POST["grupo"]
+        user = User.objects.get(id=int(idUsuario))
+        user.username = username
+        user.email = email
+        user.first_name = first_name
+        user.last_name = last_name
+        if password == '':
+            print('hola')
+        else:
+            user.set_password(password)
+        user.save()
+        user.groups.clear()
+        grupo = Group.objects.filter(name=str(grupo_get))
+        user = User.objects.get(pk=user.id)
+        if grupo.exists():
+            user.groups.add(grupo[0])
+        else:
+            grupo = Group(name=grupo_get)
+            grupo.save()
+            user.groups.add(grupo)
+        return HttpResponseRedirect(reverse('verUsuarios'))
+    else:
+        cursor = connection.cursor()
+        cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
+        usuario = dictfetchall(cursor)
+        return render(request, "admin/usuarios/editar/index.html", {'usuario': usuario})
+
+@login_required
+def eliminarUsuario(request, idUsuario):
+    usuario = User.objects.get(id=int(idUsuario))
+    usuario.delete()
+    return HttpResponseRedirect(reverse('verUsuarios'))

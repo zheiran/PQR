@@ -7,7 +7,6 @@ urlpatterns = [
     url(r'^registro/$', views.registro, name='registro'),
     url(r'^solicitudes/$', views.home, name='home'),
     url(r'^cerrarSesion/$', views.cerrarSesion, name='cerrarSesion'),
-    url(r'^administracion/usuarios/$', views.administrarUsuarios, name='administrarUsuarios'),
     url(r'^administracion/workflow/list/$', views.workflowList, name='workflowList'),
     url(r'^administracion/workflow/nuevo/$', views.nuevoWorkflow, name='nuevoWorkflow'),
     url(r'^administracion/solicitudes/agente/$', views.solicitudesAgentes, name='solicitudesAgente'),
@@ -15,4 +14,8 @@ urlpatterns = [
     url(r'^administracion/workflow/(?P<id>\d+)/pasos/nuevo$', views.nuevoPaso, name='nuevoPaso'),
     url(r'^administracion/workflow/(?P<idWorkflow>\d+)/pasos/borrar/(?P<idPaso>\d+)$', views.eliminarPaso, name='eliminarPaso'),
     url(r'^administracion/workflow/(?P<idWorkflow>\d+)/pasos/editar/(?P<idPaso>\d+)$', views.editarPaso, name='editarPaso'),
+    url(r'^administracion/usuarios/$', views.verUsuarios, name='verUsuarios'),
+    url(r'^administracion/usuarios/nuevo/$', views.nuevoUsuario, name='nuevoUsuario'),
+    url(r'^administracion/usuarios/editar/(?P<idUsuario>\d+)$', views.editarUsuario, name='editarUsuario'),
+    url(r'^administracion/usuarios/borrar/(?P<idUsuario>\d+)$', views.eliminarUsuario, name='eliminarUsuario'),
 ]

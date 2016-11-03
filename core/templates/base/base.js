@@ -15,7 +15,11 @@
 			  	str = str.replace(/'/g, '"');
 		      	str = str.replace(/ F/g, ' f');
 		      	str = str.replace(/ T/g, ' t');
+		      	str = str.replace(/ None/g, ' null');
 		      	re = /datetime.datetime\((.+?), tzinfo=<UTC>\)/g,
+        		subst = '"$1"';
+    			str = str.replace(re, subst);
+    			re = /datetime.date\((.+?)\)/g,
         		subst = '"$1"';
     			str = str.replace(re, subst);
 		      	str = JSON.parse(str);

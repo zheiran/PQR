@@ -43,13 +43,13 @@ def registro(request):
             user.last_name = last_name
             user.save()
             grupo = Group.objects.filter(name="Estudiante")
+            user = User.objects.get(pk=user.id)
             if grupo.exists():
-                print('el grupo ya existe')
+                user.groups.add(grupo[0])
             else:
                 grupo = Group(name="Estudiante")
                 grupo.save()
-            user = User.objects.get(pk=user.id)
-            user.groups.add(grupo[0])
+                user.groups.add(grupo)
  
             return HttpResponseRedirect(reverse('inicio'))  # Redirect after POST
     else:

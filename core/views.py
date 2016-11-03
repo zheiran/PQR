@@ -227,7 +227,7 @@ def editarUsuario(request, idUsuario):
         user.first_name = first_name
         user.last_name = last_name
         if password == '':
-            print('no se actualiza la contraseña')
+            print('no se actualiza la contrasena')
         else:
             user.set_password(password)
         user.save()

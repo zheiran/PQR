@@ -11,7 +11,7 @@
 		Crear solicitud <span class="caret"></span>
 		</button>
 		<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
-			<li role="menuitem" ng-repeat="proceso in procesos"><a href="" ng-click="[[proceso.id]]">[[proceso.nombre]]</a></li>
+			<li role="menuitem" ng-repeat="proceso in procesos"><a href="" ng-click="nuevaSolicitud(proceso.id)">[[proceso.nombre]]</a></li>
 		</ul>
 	</div>
 	<h2>Mis solicitudes</h2>

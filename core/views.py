@@ -9,9 +9,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db import connection
+import datetime
 
 from .forms import RegistroForm
-from modelos.models import Flujo_de_trabajo, Pasos, Solicitudes
+from modelos.models import Flujo_de_trabajo, Pasos, Solicitudes, Solicitudes_logs
 
 def inicio(request):
     if request.method == 'POST':
@@ -60,7 +61,7 @@ def registro(request):
 @login_required
 def home(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE u.id = %s", [request.user.id])
+    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s", [request.user.id])
     solicitudes = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")
@@ -252,3 +253,13 @@ def eliminarUsuario(request, idUsuario):
     usuario = User.objects.get(id=int(idUsuario))
     usuario.delete()
     return HttpResponseRedirect(reverse('verUsuarios'))
+
+@login_required
+def crearSolicitud(request, idProceso):
+    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, fecha = datetime.date.today(), respuesta = '')
+    solicitud.save()
+    return HttpResponseRedirect(reverse('formulario', args=[solicitud.id]))
+
+@login_required
+def formulario(request, idSolicitud):
+    return render(request, "solicitudes/formulario/index.html", {})

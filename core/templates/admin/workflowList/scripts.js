@@ -7,7 +7,7 @@
 			}
 		};
 	  	$scope.pasos = function(id){
-	  		location = '{% url "verPasos" 12345%}'.replace(/12345/, id.toString());
+	  		location = '{% url "verPasos" 01%}'.replace(/01/, id.toString());
 	  	};
 	});
 </script>

@@ -25,7 +25,7 @@
 		return decodeHTMLEntities;
 	})();
 
-	var angularApp = angular.module('pqrApp', []);
+	var angularApp = angular.module('pqrApp', ['ui.bootstrap']);
 	angularApp.config(function($interpolateProvider , $httpProvider) { 
 	    $interpolateProvider.startSymbol('[['); 
 	    $interpolateProvider.endSymbol(']]'); 

@@ -44,7 +44,7 @@ def registro(request):
             user.save()
             grupo = Group.objects.filter(name="Estudiante")
             if grupo.exists():
-                print(grupo)
+                print('el grupo ya existe')
             else:
                 grupo = Group(name="Estudiante")
                 grupo.save()
@@ -59,7 +59,16 @@ def registro(request):
 
 @login_required
 def home(request):
-    return render(request, "solicitudes/index.html", {})
+    cursor = connection.cursor()
+    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE u.id = %s", [request.user.id])
+    solicitudes = dictfetchall(cursor)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo")
+    procesos = dictfetchall(cursor)
+    cursor = connection.cursor()
+    cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])
+    usuario = dictfetchall(cursor)
+    return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario})
 
 @login_required
 def cerrarSesion(request):
@@ -218,7 +227,7 @@ def editarUsuario(request, idUsuario):
         user.first_name = first_name
         user.last_name = last_name
         if password == '':
-            print('hola')
+            print('no se actualiza la contraseña')
         else:
             user.set_password(password)
         user.save()

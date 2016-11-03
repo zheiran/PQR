@@ -1,5 +1,7 @@
 <script>
 	angularApp.controller('solicitudesController', function($scope) {
-	  	$scope.mensaje = '';
+	  	$scope.solicitudes = decodeEntities('{{ solicitudes }}');
+	  	$scope.procesos = decodeEntities('{{ procesos }}');
+	  	$scope.usuario = decodeEntities('{{ usuario }}');
 	});
 </script>

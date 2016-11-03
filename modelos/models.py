@@ -11,7 +11,7 @@ class Pasos(models.Model):
 
 class Flujo_de_trabajo(models.Model):
     usuario_id = models.IntegerField(blank = True, null = True)
-    nombre = models.CharField(max_length = 20, blank = True, null = True)
+    nombre = models.CharField(max_length = 50, blank = True, null = True)
     publicado = models.BooleanField()
 
 class Solicitudes(models.Model):

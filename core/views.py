@@ -255,6 +255,39 @@ def eliminarUsuario(request, idUsuario):
     return HttpResponseRedirect(reverse('verUsuarios'))
 
 @login_required
+def editarWorkflow(request, idWorkflow):
+    if request.method == 'POST':
+        userId = request.POST["usuario"]
+        nombre = request.POST["nombre"]
+        workflow = Flujo_de_trabajo.objects.get(id=int(idWorkflow))
+        workflow.usuario_id = userId
+        workflow.nombre = nombre
+        workflow.save()
+        return HttpResponseRedirect(reverse('workflowList'))
+    else:
+        cursor = connection.cursor()
+        cursor.execute("SELECT f.id as procesoId, u.first_name, u.id as userId, u.last_name, f.nombre, f.publicado  FROM modelos_flujo_de_trabajo f INNER JOIN auth_user u ON u.id = f.usuario_id WHERE f.id = %s", [idWorkflow])
+        workflow = dictfetchall(cursor)
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        usuarios = dictfetchall(cursor)
+    return render(request, "admin/workflowList/editarWorkflow/index.html", {'usuarios': usuarios, 'workflow': workflow})
+
+@login_required
+def desactivarWorkflow(request, idWorkflow):
+    workflow = Flujo_de_trabajo.objects.get(id=int(idWorkflow))
+    workflow.publicado = False
+    workflow.save()
+    return HttpResponseRedirect(reverse('workflowList'))
+
+@login_required
+def activarWorkflow(request, idWorkflow):
+    workflow = Flujo_de_trabajo.objects.get(id=int(idWorkflow))
+    workflow.publicado = True
+    workflow.save()
+    return HttpResponseRedirect(reverse('workflowList'))
+
+@login_required
 def crearSolicitud(request, idProceso):
     solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, fecha = datetime.date.today(), respuesta = '')
     solicitud.save()

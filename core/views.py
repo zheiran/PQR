@@ -63,7 +63,7 @@ def home(request):
     cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE u.id = %s", [request.user.id])
     solicitudes = dictfetchall(cursor)
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo")
+    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")
     procesos = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])

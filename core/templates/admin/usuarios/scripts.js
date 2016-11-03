@@ -5,10 +5,10 @@
 			location = '{% url "nuevoUsuario" %}';
 		};
 		$scope.eliminar = function(id) {
-			location = '{% url "eliminarUsuario" 01%}'.replace(/01/, id.toString());
+			location = '{% url "eliminarUsuario" 101%}'.replace(/101/, id.toString());
 		};
 		$scope.editar = function(id) {
-			location = '{% url "editarUsuario" 01%}'.replace(/01/, id.toString());
+			location = '{% url "editarUsuario" 101%}'.replace(/101/, id.toString());
 		};
 	});
 </script>

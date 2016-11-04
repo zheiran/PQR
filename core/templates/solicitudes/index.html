@@ -23,7 +23,7 @@
                 <th>Fecha</th>
                 <th ng-if="usuario[0].grupo === 'Estudiante'">Respuesta</th>
                 <th>Proceso</th>
-                <th ng-if="usuario[0].grupo === 'Agente'">Histórico</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +32,8 @@
                 <td>[[solicitud.fecha]]</td>
                 <td ng-if="usuario[0].grupo === 'Estudiante'">[[solicitud.respuesta]]</td>
                 <td>[[solicitud.proceso]]</td>
-                <td ng-if="usuario[0].grupo === 'Agente'"><button class="btn btn-warning">Histórico</button></td>
+                <td><button class="btn btn-warning" ng-if="usuario[0].grupo === 'Agente'">Histórico</button>
+                <button class="btn btn-info" ng-click="abrirSolicitud(solicitud.id)">Abrir</button></td>
             </tr>
         </tbody>
     </table>

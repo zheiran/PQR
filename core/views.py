@@ -1,5 +1,5 @@
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
@@ -295,4 +295,15 @@ def crearSolicitud(request, idProceso):
 
 @login_required
 def formulario(request, idSolicitud):
-    return render(request, "solicitudes/formulario/index.html", {})
+    if Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).exists():
+        log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')[0]
+        paso = Pasos.objects.filter(id=int(log.pasos_id))[0]
+        dataLog = serializers.serialize('json', [log,])
+    else:
+        solicitud = Solicitudes.objects.get(id=int(idSolicitud))
+        paso = Pasos.objects.filter(flujos_id=int(solicitud.flujos_id), numero=1)[0]
+        log_nuevo = Solicitudes_logs(pasos_id = int(paso.id), solicitudes_id = int(idSolicitud), usuario_id = request.user.id, fecha = datetime.date.today())
+        log_nuevo.save()
+        dataLog = serializers.serialize('json', [log_nuevo, ])
+    dataPaso = serializers.serialize('json', [paso, ])
+    return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso})

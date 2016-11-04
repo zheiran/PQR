@@ -350,3 +350,14 @@ def devolverFormulario(request, idLog):
         log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
         log_nuevo.save()
     return HttpResponseRedirect(reverse('home'))
+
+
+@login_required
+def historico(request, idSolicitud):
+    cursor = connection.cursor()
+    cursor.execute("SELECT l.pasos_id as paso, u.username as agente, l.comentarios as observaciones, l.fecha as fecha FROM modelos_solicitudes_logs l INNER JOIN auth_user u ON u.id = l.usuario_id WHERE l.solicitudes_id = %s", [idSolicitud])
+    logs = dictfetchall(cursor)
+    cursor = connection.cursor()
+    cursor.execute("SELECT u.username as estudiante, w.nombre as asunto, s.id as numero FROM modelos_solicitudes s INNER JOIN auth_user u ON u.id = s.usuario_id  INNER JOIN modelos_flujo_de_trabajo w ON w.id = s.flujos_id WHERE s.id = %s", [idSolicitud])
+    solicitud = dictfetchall(cursor)
+    return render(request, "solicitudes/historico/index.html", {'logs': logs, 'solicitud': solicitud})

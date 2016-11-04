@@ -10,5 +10,8 @@
 	  	$scope.abrirSolicitud = function(id) {
 	  		location = '{% url "formulario" 101%}'.replace(/101/, id.toString());
 	  	};
+	  	$scope.historicoSolicitud = function(id) {
+	  		location = '{% url "historico" 101%}'.replace(/101/, id.toString());
+	  	};
 	});
 </script>

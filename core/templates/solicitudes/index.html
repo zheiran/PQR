@@ -35,7 +35,7 @@
                 <td>[[solicitud.proceso]]</td>
                 <td>[[solicitud.first_name]] [[solicitud.last_name]]</td>
                 <td><button class="btn btn-warning" ng-if="usuario[0].grupo === 'Agente'">Histórico</button>
-                <button class="btn btn-info" ng-click="abrirSolicitud(solicitud.id)">Abrir</button></td>
+                <button class="btn btn-info" ng-if="usuario[0].grupo === 'Agente'" ng-click="abrirSolicitud(solicitud.id)">Abrir</button></td>
             </tr>
         </tbody>
     </table>

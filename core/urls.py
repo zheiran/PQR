@@ -23,4 +23,6 @@ urlpatterns = [
     url(r'^administracion/usuarios/borrar/(?P<idUsuario>\d+)$', views.eliminarUsuario, name='eliminarUsuario'),
     url(r'^solicitudes/(?P<idProceso>\d+)/crear/$', views.crearSolicitud, name='crearSolicitud'),
     url(r'^solicitudes/(?P<idSolicitud>\d+)/formulario/$', views.formulario, name='formulario'),
+    url(r'^solicitudes/(?P<idLog>\d+)/formulario/enviar/$', views.enviarFormulario, name='enviarFormulario'),
+    url(r'^solicitudes/(?P<idLog>\d+)/formulario/devolver/$', views.devolverFormulario, name='devolverFormulario'),
 ]

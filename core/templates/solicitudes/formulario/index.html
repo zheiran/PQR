@@ -2,14 +2,21 @@
 
 {% block contenido %}
 <div ng-controller="formularioController" class="row">
-    <div class="form-group">
-        <label for="comentarios">Comentarios generales</label>
-        <textarea class="form-control" id="comentarios" ng-model="comentarios" name="comentarios" placeholder="Agrega un comentario"></textarea>
-    </div>
-    <div class="form-group">
-        <button type="button" class="btn btn-success">Guardar y enviar</button>
-        <button type="button" class="btn btn-warning" ng-if="log[0].fields.numero !== 1">Guardar y devolver</button>
-    </div>
+    <form name="formularioForm" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="comentarios">Comentarios generales</label>
+            <textarea class="form-control" id="comentarios" ng-model="comentarios" name="comentarios" placeholder="Agrega un comentario"></textarea>
+            <div class="alert alert-danger" role="alert" ng-if="mensaje !== ''">[[mensaje]]</div>
+        </div>
+        <div class="form-group" ng-if="paso.length === 0">
+            <button type="button" class="btn btn-success" ng-click="guardarEnviar()">Guardar y enviar</button>
+        </div>
+        <div class="form-group" ng-if="paso.length !== 0">
+            <button type="button" class="btn btn-warning" ng-if="paso[0].fields.numero !== 1" ng-click="guardarDevolver()">Guardar y devolver</button>
+            <button type="button" class="btn btn-success" ng-click="guardarEnviar()">Guardar y enviar</button>
+        </div>
+    </form>
 </div>
 {% endblock%}
 

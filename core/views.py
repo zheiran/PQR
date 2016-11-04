@@ -61,7 +61,12 @@ def registro(request):
 @login_required
 def home(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s", [request.user.id])
+    if request.user.groups.filter(name='Estudiante').exists():
+        cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s", [request.user.id])
+    elif request.user.groups.filter(name='Agente').exists():
+        cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE (sl.comentarios = '') IS NOT FALSE AND sl.usuario_id = %s", [request.user.id])
+    else:
+        return HttpResponseRedirect(reverse('workflowList'))
     solicitudes = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")
@@ -297,13 +302,51 @@ def crearSolicitud(request, idProceso):
 def formulario(request, idSolicitud):
     if Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).exists():
         log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')[0]
-        paso = Pasos.objects.filter(id=int(log.pasos_id))[0]
         dataLog = serializers.serialize('json', [log,])
+        if Pasos.objects.filter(id=int(log.pasos_id)).exists():
+            paso = Pasos.objects.filter(id=int(log.pasos_id))[0]
+            dataPaso = serializers.serialize('json', [paso, ])
+        else:
+            dataPaso = serializers.serialize('json', '')
     else:
         solicitud = Solicitudes.objects.get(id=int(idSolicitud))
-        paso = Pasos.objects.filter(flujos_id=int(solicitud.flujos_id), numero=1)[0]
-        log_nuevo = Solicitudes_logs(pasos_id = int(paso.id), solicitudes_id = int(idSolicitud), usuario_id = request.user.id, fecha = datetime.date.today())
+        log_nuevo = Solicitudes_logs(pasos_id = 0, solicitudes_id = int(idSolicitud), usuario_id = request.user.id, fecha = datetime.date.today())
         log_nuevo.save()
         dataLog = serializers.serialize('json', [log_nuevo, ])
-    dataPaso = serializers.serialize('json', [paso, ])
+        dataPaso = serializers.serialize('json', '')
     return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso})
+
+@login_required
+def enviarFormulario(request, idLog):
+    if request.method == 'POST':
+        comentarios = request.POST['comentarios']
+        log = Solicitudes_logs.objects.get(id=int(idLog))
+        log.comentarios = comentarios
+        log.save()
+        if Pasos.objects.filter(id=int(log.pasos_id)).exists():
+            paso_antiguo = Pasos.objects.get(id=int(log.pasos_id))
+            paso_nuevo = Pasos.objects.filter(flujos_id=int(paso_antiguo.flujos_id), numero=int(paso_antiguo.numero+1))
+        else:
+            solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
+            paso_nuevo = Pasos.objects.filter(flujos_id=int(solicitud.flujos_id), numero=1)
+        if paso_nuevo.exists():
+            log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
+            log_nuevo.save()
+        else:
+            solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
+            solicitud.respuesta = comentarios
+            solicitud.save()
+    return HttpResponseRedirect(reverse('home'))
+
+@login_required
+def devolverFormulario(request, idLog):
+    if request.method == 'POST':
+        comentarios = request.POST['comentarios']
+        log = Solicitudes_logs.objects.get(id=int(idLog))
+        log.comentarios = comentarios
+        log.save()
+        paso_antiguo = Pasos.objects.get(id=int(log.pasos_id))
+        paso_nuevo = Pasos.objects.filter(flujos_id=int(paso_antiguo.flujos_id), numero=int(paso_antiguo.numero-1))
+        log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
+        log_nuevo.save()
+    return HttpResponseRedirect(reverse('home'))

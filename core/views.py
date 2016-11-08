@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db import connection
+from django.core.mail import EmailMessage
 import datetime
 
 from .forms import RegistroForm
@@ -337,10 +338,33 @@ def enviarFormulario(request, idLog):
         if paso_nuevo.exists():
             log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
             log_nuevo.save()
+            usuario = User.objects.get(id=int(paso_nuevo[0].usuario_id))
+            solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
+            proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
+            encargado = User.objects.get(id=int(proceso.usuario_id))
+            email = EmailMessage(
+                'Una nueva solicitud se le ha sido asignada',
+                'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.',
+                'pqr@pqr.com',
+                [usuario.email, encargado.email],
+            )
+            email.content_subtype = "html"
+            email.send()
         else:
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
             solicitud.respuesta = comentarios
             solicitud.save()
+            usuario = User.objects.get(id=int(solicitud.usuario_id))
+            proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
+            encargado = User.objects.get(id=int(proceso.usuario_id))
+            email = EmailMessage(
+                'Una solicitud ha sido resuelta',
+                'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.',
+                'pqr@pqr.com',
+                [usuario.email, encargado.email],
+            )
+            email.content_subtype = "html"
+            email.send()
     return HttpResponseRedirect(reverse('home'))
 
 @login_required
@@ -354,6 +378,18 @@ def devolverFormulario(request, idLog):
         paso_nuevo = Pasos.objects.filter(flujos_id=int(paso_antiguo.flujos_id), numero=int(paso_antiguo.numero-1))
         log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
         log_nuevo.save()
+        usuario = User.objects.get(id=int(paso_nuevo[0].usuario_id))
+        solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
+        proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
+        encargado = User.objects.get(id=int(proceso.usuario_id))
+        email = EmailMessage(
+            'Una nueva solicitud se le ha sido devuelta',
+            'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.',
+            'pqr@pqr.com',
+            [usuario.email, encargado.email],
+        )
+        email.content_subtype = "html"
+        email.send()
     return HttpResponseRedirect(reverse('home'))
 
 

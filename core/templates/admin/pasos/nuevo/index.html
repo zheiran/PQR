@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "admin/pasos/nuevo/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+<div class="row" ng-controller="nuevoPasoController">
+	<h2>Nuevo paso para el proceso "[[proceso[0].nombre]]"</h2>
+    <form method="post" name="nuevoPaso">
+        {% csrf_token %}
+        <div class="form-group col-md-6">
+            <label for="usuario">Agente: </label>
+            <select id="usuario" ng-model="usuario" name="usuario" class="form-control" required>
+                <option value="">--Selecciona un responsable--</option>
+                <option ng-repeat="usuario in usuarios" value="[[usuario.id]]">[[usuario.first_name]] [[usuario.last_name]]</option>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="nombre">Nombre: </label>
+            <input type="text" name="nombre" id="nombre" class="form-control" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="numero">Número: </label>
+            <input type="number" name="numero" id="numero" class="form-control" max="10" min="1" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="duracion">Duracion: </label>
+            <input type="number" name="duracion" id="duracion" class="form-control" max="10" min="1" required>
+        </div>
+        <div class="form-group col-md-6">
+            <button class="btn btn-success" type="submit" ng-click="guardar()">Guardar</button>
+        </div>
+    </form>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "admin/pasos/nuevo/scripts.js" %}
+{% endblock%}

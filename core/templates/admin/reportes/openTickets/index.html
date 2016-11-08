@@ -1,0 +1,47 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "admin/reportes/openTickets/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+<div ng-controller="reporteOpenTicketController">
+	<h2>Solicitudes Abiertas vs Cerradas</h2>
+	{% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Estado</th>
+                <th>Fecha Inicio (A-M-D)</th>
+                <th>Fecha Cierre (A-M-D)</th>
+                <th>Días Abierta</th>
+                <th>Asunto</th>
+                <th>Encargado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="solicitud in solicitudes">
+                <td>[[solicitud.id]]</td>
+                <td ng-if="solicitud.respuesta!=''">Cerrado</td>
+                <td ng-if="solicitud.respuesta==''">Abierto</td>
+                <td ng-bind="fechaLegible(solicitud.fecha_inicio)"></td>
+                <td ng-bind="fechaLegible(solicitud.fecha_fin)"></td>
+                <td>[[solicitud.dias]]</td>
+                <td>[[solicitud.proceso]]</td>
+                <td>[[solicitud.usuario]]</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Porcentaje de Solicitudes Cerradas</h2>
+    <canvas id="doughnut" class="chart chart-doughnut" chart-data="dataPie" chart-labels="labelsPie" chart-colors="colorsPie"></canvas> 
+    <h2>Numero de días de cada solicitud</h2>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataTicketDuracion" chart-labels="labelsTicketDuracion">chart-series="series"</canvas>
+    <h2>Número de solicitudes por días Abierta</h2>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataDias" chart-labels="labelsDias">chart-series="series"</canvas>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "admin/reportes/openTickets/scripts.js" %}
+{% endblock%}

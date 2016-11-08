@@ -1,0 +1,48 @@
+{% extends "base/base.html" %}
+
+{% block contenido %}
+	<div class="row" ng-controller="historicoController">
+	    <h2>Historico Solicitud</h2>
+	    <p><b>Id:</b> [[solicitud[0].numero]]</p>
+	    <p><b>Asunto:</b> [[solicitud[0].asunto]]</p>
+	    <p><b>Estudiante:</b> [[solicitud[0].estudiante]]</p>
+	    <table class="table">
+	        <thead>
+	            <tr>
+	                <th>Paso</th>
+	                <th>Agente</th>
+	                <th>Fecha Inicio (A-M-D)</th>
+	                <th>Fecha Fin (A-M-D)</th>
+	                <th>Detalle</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr ng-repeat="log in logs">
+	                <td>[[log.paso]]</td>
+	                <td>[[log.agente]]</td>
+	                <td ng-bind="fechaLegible(log.fecha)"></td>
+	                <td ng-bind="fechaLegible(logs[$index + 1].fecha)"></td>
+	                <td>
+	                    <a href="" class="btn btn-info" ng-click="open(log)">Ver Detalle</a>
+	                </td>
+	            </tr>
+	        </tbody>
+	    </table>
+	    <script type="text/ng-template" id="detalleHistorico.html">
+	        <div class="modal-header">
+	            <h3 class="modal-title" id="modal-title">Detalle Paso</h3>
+	        </div>
+	        <div class="modal-body" id="modal-body">
+	            <h3>Observación</h3>
+	            <p ng-bind="row.observaciones"></p>
+	        </div>
+	        <div class="modal-footer">
+	            <button class="btn btn-warning" type="button" ng-click="close()">Cerrar</button>
+	        </div>
+	    </script>
+	</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "solicitudes/historico/scripts.js" %}
+{% endblock%}

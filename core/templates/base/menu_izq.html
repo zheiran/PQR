@@ -1,0 +1,49 @@
+{% load staticfiles %}
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            {% if es_administrador %}
+                <li>
+                    <a href="#"><i class="fa fa-dashboard fa-fw"></i> Gestión de Procesos<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="/administracion/workflow/list/"><i class="fa fa-table fa-fw"></i> Listar Procesos</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-user fa-fw"></i>Usuarios<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="{% url 'verUsuarios' %}"><i class="fa fa-table fa-fw"></i>Gestión de usuarios</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-area-chart fa-fw"></i>Reportes<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="{% url 'reporteSolicitudesAbiertas' %}"><i class="fa fa-pie-chart fa-fw"></i>Solicitudes Abiertas vs Cerradas</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'reporteSolicitudesAbiertas' %}"><i class="fa fa-bar-chart fa-fw"></i>Solicitudes Abiertas vs Cerradas</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'reporteSolicitudesAbiertas' %}"><i class="fa fa-line-chart fa-fw"></i>Solicitudes Abiertas vs Cerradas</a>
+                        </li>
+                    </ul>
+                </li>
+            {% else %}
+                <li>
+                    <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i>Solicitudes<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="{% url 'home' %}"><i class="fa fa-table fa-fw"></i>Ver solicitudes</a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    <!-- /.sidebar-collapse -->
+</div>

@@ -1,0 +1,26 @@
+{% extends "base/base.html" %}
+
+{% block contenido %}
+<div ng-controller="formularioController" class="row">
+    <form name="formularioForm" method="POST">
+        {% csrf_token %}
+        <div class="well" ng-if="comentarios_antiguos.length !== 0"><b>[[comentarios_antiguos[0].fields.comentarios]]</b></div>
+        <div class="form-group">
+            <label for="comentarios">Comentarios generales</label>
+            <textarea class="form-control" id="comentarios" ng-model="comentarios" name="comentarios" placeholder="Agrega un comentario"></textarea>
+            <div class="alert alert-danger" role="alert" ng-if="mensaje !== ''">[[mensaje]]</div>
+        </div>
+        <div class="form-group" ng-if="paso.length === 0">
+            <button type="button" class="btn btn-success" ng-click="guardarEnviar()">Guardar y enviar</button>
+        </div>
+        <div class="form-group" ng-if="paso.length !== 0">
+            <button type="button" class="btn btn-warning" ng-if="paso[0].fields.numero !== 1" ng-click="guardarDevolver()">Guardar y devolver</button>
+            <button type="button" class="btn btn-success" ng-click="guardarEnviar()">Guardar y enviar</button>
+        </div>
+    </form>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "solicitudes/formulario/scripts.js" %}
+{% endblock%}

@@ -1,0 +1,47 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "solicitudes/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+<div ng-controller="solicitudesController">
+	<div class="btn-group" uib-dropdown is-open="status.isopen">
+		<button ng-if="usuario[0].grupo === 'Estudiante'" id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
+		Crear solicitud <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+			<li role="menuitem" ng-repeat="proceso in procesos"><a href="" ng-click="nuevaSolicitud(proceso.id)">[[proceso.nombre]]</a></li>
+		</ul>
+	</div>
+	<h2>Mis solicitudes</h2>
+	{% csrf_token %}
+	<table class="table">
+        <thead>
+            <tr>
+                <th>Identificación</th>
+                <th>Fecha (A-M-D)</th>
+                <th ng-if="usuario[0].grupo === 'Estudiante'">Respuesta</th>
+                <th>Proceso</th>
+                <th>Solicitante</th>
+                <th ng-if="usuario[0].grupo === 'Agente'">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="solicitud in solicitudes">
+                <td>[[solicitud.id]]</td>
+                <td ng-bind="fechaLegible(solicitud.fecha)"></td>
+                <td ng-if="usuario[0].grupo === 'Estudiante'">[[(solicitud.respuesta !== '')?solicitud.respuesta:'Aun no tiene una respuesta']]</td>
+                <td>[[solicitud.proceso]]</td>
+                <td>[[solicitud.first_name]] [[solicitud.last_name]]</td>
+                <td ng-if="usuario[0].grupo === 'Agente'"><button class="btn btn-warning" ng-click="historicoSolicitud(solicitud.id)">Histórico</button>
+                <button class="btn btn-info" ng-click="abrirSolicitud(solicitud.id)">Abrir</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "solicitudes/scripts.js" %}
+{% endblock%}

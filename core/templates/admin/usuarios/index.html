@@ -1,0 +1,39 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "admin/usuarios/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+<div ng-controller="usuarioController">
+	<h2>Usuarios</h2>
+	{% csrf_token %}
+	<a href="" class="btn btn-info" ng-click="nuevo()">Nuevo usuario</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>grupo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="usuario in usuarios|orderBy:'numero'">
+                <td>[[usuario.username]]</td>
+                <td>[[usuario.first_name]] [[usuario.last_name]]</td>
+                <td>[[usuario.email]]</td>
+                <td>[[usuario.grupo]]</td>
+                <td>
+                    <a href="" class="btn btn-info" ng-click="editar(usuario.id)">Editar</a>
+                    <a href="" class="btn btn-danger" ng-click="eliminar(usuario.id)">Eliminar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "admin/usuarios/scripts.js" %}
+{% endblock%}

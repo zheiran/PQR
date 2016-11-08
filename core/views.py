@@ -402,3 +402,10 @@ def historico(request, idSolicitud):
     cursor.execute("SELECT u.username as estudiante, w.nombre as asunto, s.id as numero FROM modelos_solicitudes s INNER JOIN auth_user u ON u.id = s.usuario_id  INNER JOIN modelos_flujo_de_trabajo w ON w.id = s.flujos_id WHERE s.id = %s", [idSolicitud])
     solicitud = dictfetchall(cursor)
     return render(request, "solicitudes/historico/index.html", {'logs': logs, 'solicitud': solicitud})
+
+@login_required
+def reporteSolicitudesAbiertas(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id")
+    solicitudes = dictfetchall(cursor)
+    return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes})

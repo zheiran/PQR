@@ -40,7 +40,7 @@
 		return decodeDatesString;
 	})();
 
-	var angularApp = angular.module('pqrApp', ['ui.bootstrap']);
+	var angularApp = angular.module('pqrApp', ['ui.bootstrap','chart.js']);
 	angularApp.config(function($interpolateProvider , $httpProvider) { 
 	    $interpolateProvider.startSymbol('[['); 
 	    $interpolateProvider.endSymbol(']]'); 

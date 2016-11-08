@@ -17,7 +17,7 @@ class Flujo_de_trabajo(models.Model):
 class Solicitudes(models.Model):
     flujos_id = models.IntegerField(blank = True, null = True)
     usuario_id = models.IntegerField(blank = True, null = True)
-    fecha = models.DateField()
+    fecha = models.DateField(null = True)
     respuesta = models.TextField(blank = True, null = True)
 
 class Solicitudes_logs(models.Model):

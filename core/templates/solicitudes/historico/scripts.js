@@ -4,8 +4,7 @@
 	  	$scope.solicitud = decodeEntities('{{ solicitud }}');
 	  	$scope.encargado = 'asd';
 	  	$scope.observacion = 'asdasd';
-		$scope.open = function (index) {
-			$scope.loquesea = index;
+		$scope.open = function (log) {
 			modalInstance = $uibModal.open({
 				animation: true,
 				ariaLabelledBy: 'modal-title',
@@ -15,8 +14,8 @@
 				controllerAs: 'modalController',
 				size: 'lg',
 				resolve: {
-					loquesea: function () {
-						return $scope.loquesea;
+					row: function () {
+						return log;
 					}
 				}
 			});
@@ -25,14 +24,14 @@
 
 	  	$scope.fechaLegible = function(fecha) {
 	  		if (typeof fecha == "undefined") {
-	  			return 'Sin Terminar...';
+	  			return 'Sin Responder...';
 	  		}
 	  		date = decodeDates(fecha);
 	  		return date[0]+'-'+date[1]+'-'+date[2];
 	  	};
 	});
-	angularApp.controller('modalController', function($scope, $uibModal, $uibModalInstance, loquesea) 	{
-	  	$scope.loquesea = loquesea;
+	angularApp.controller('modalController', function($scope, $uibModal, $uibModalInstance, row) 	{
+	  	$scope.row = row;
 
 		$scope.close = function () {
 			modalInstance.close();

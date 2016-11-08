@@ -14,8 +14,13 @@
 	  	};
 
 	  	$scope.fechaLegible = function(fecha) {
-	  		date = decodeDates(fecha);
-	  		return date[0]+'-'+date[1]+'-'+date[2];
+	  		if (fecha) {
+	  			date = decodeDates(fecha);
+	  			date = date[0]+'-'+date[1]+'-'+date[2];
+	  		}else{
+	  			date = 'Sin fecha';
+	  		}
+	  		return date;
 	  	};
 	});
 </script>

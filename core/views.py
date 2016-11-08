@@ -306,7 +306,7 @@ def activarWorkflow(request, idWorkflow):
 
 @login_required
 def crearSolicitud(request, idProceso):
-    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, fecha = '0000-00-00', respuesta = '')
+    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, respuesta = '')
     solicitud.save()
     return HttpResponseRedirect(reverse('formulario', args=[solicitud.id]))
 

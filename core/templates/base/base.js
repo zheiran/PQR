@@ -28,6 +28,17 @@
 
 		return decodeHTMLEntities;
 	})();
+	var decodeDates = (function(dateStr) {
+		function decodeDatesString (dateStr) {
+			if(dateStr && typeof dateStr === 'string') {
+			  	dateStr = dateStr.replace(/ /g, '');
+			  	dateStr = dateStr.split(",");
+		     }
+		  	return dateStr;
+		}
+
+		return decodeDatesString;
+	})();
 
 	var angularApp = angular.module('pqrApp', ['ui.bootstrap']);
 	angularApp.config(function($interpolateProvider , $httpProvider) { 

@@ -28,8 +28,19 @@
 
 		return decodeHTMLEntities;
 	})();
+	var decodeDates = (function(dateStr) {
+		function decodeDatesString (dateStr) {
+			if(dateStr && typeof dateStr === 'string') {
+			  	dateStr = dateStr.replace(/ /g, '');
+			  	dateStr = dateStr.split(",");
+		     }
+		  	return dateStr;
+		}
 
-	var angularApp = angular.module('pqrApp', ['ui.bootstrap']);
+		return decodeDatesString;
+	})();
+
+	var angularApp = angular.module('pqrApp', ['ui.bootstrap','chart.js']);
 	angularApp.config(function($interpolateProvider , $httpProvider) { 
 	    $interpolateProvider.startSymbol('[['); 
 	    $interpolateProvider.endSymbol(']]'); 

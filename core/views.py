@@ -75,7 +75,8 @@ def home(request):
     cursor = connection.cursor()
     cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])
     usuario = dictfetchall(cursor)
-    return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario, 'es_administrador': es_administrador})
 
 @login_required
 def cerrarSesion(request):
@@ -94,7 +95,8 @@ def workflowList(request):
         cursor = connection.cursor()
         cursor.execute("SELECT f.id, u.first_name, u.last_name, f.nombre, f.publicado  FROM modelos_flujo_de_trabajo f INNER JOIN auth_user u ON u.id = f.usuario_id")
         procesos = dictfetchall(cursor)
-    return render(request, "admin/workflowList/workflowList.html", {'procesos': procesos})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/workflowList/workflowList.html", {'procesos': procesos, 'es_administrador': es_administrador})
 
 @login_required
 def nuevoWorkflow(request):
@@ -108,7 +110,8 @@ def nuevoWorkflow(request):
         cursor = connection.cursor()
         cursor.execute("SELECT id, first_name, last_name FROM auth_user")
         usuarios = dictfetchall(cursor)
-    return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios, 'es_administrador': es_administrador})
 
 @login_required
 def verPasos(request, id):
@@ -118,7 +121,8 @@ def verPasos(request, id):
     cursor = connection.cursor()
     cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [id])
     proceso = dictfetchall(cursor)
-    return render(request, "admin/pasos/index.html", {'pasos': pasos, 'proceso': proceso})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/pasos/index.html", {'pasos': pasos, 'proceso': proceso, 'es_administrador': es_administrador})
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -133,7 +137,8 @@ def solicitudesAgentes(request):
     cursor = connection.cursor()
     cursor.execute("SELECT solicitudes.id, flujo.nombre FROM modelo_solicitudes solicitudes INNER JOIN modelo_flujo_de_trabajo flujo ON solicitudes.lujo_id = flujo.id" % (request.POST.get('solicitudes','')))
     solicitudes = cursor.fetchall()
-    return render(request, "admin/solicitudes/agente.html", {'solicitud': solicitudes})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/solicitudes/agente.html", {'solicitud': solicitudes, 'es_administrador': es_administrador})
 
 @login_required
 def nuevoPaso(request, id):
@@ -152,7 +157,8 @@ def nuevoPaso(request, id):
         cursor = connection.cursor()
         cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [id])
         proceso = dictfetchall(cursor)
-    return render(request, "admin/pasos/nuevo/index.html", {'usuarios': usuarios, 'proceso': proceso})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/pasos/nuevo/index.html", {'usuarios': usuarios, 'proceso': proceso, 'es_administrador':es_administrador})
 
 @login_required
 def eliminarPaso(request, idWorkflow, idPaso):
@@ -185,14 +191,16 @@ def editarPaso(request, idWorkflow, idPaso):
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM modelos_pasos WHERE id = %s", [idPaso])
         paso = dictfetchall(cursor)
-    return render(request, "admin/pasos/editar/index.html", {'usuarios': usuarios, 'proceso': proceso, 'paso': paso})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/pasos/editar/index.html", {'usuarios': usuarios, 'proceso': proceso, 'paso': paso, 'es_administrador': es_administrador})
 
 @login_required
 def verUsuarios(request):
     cursor = connection.cursor()
     cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id")
     usuarios = dictfetchall(cursor)
-    return render(request, "admin/usuarios/index.html", {'usuarios': usuarios})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/usuarios/index.html", {'usuarios': usuarios, 'es_administrador': es_administrador})
 
 @login_required
 def nuevoUsuario(request):
@@ -217,7 +225,8 @@ def nuevoUsuario(request):
             user.groups.add(grupo)
         return HttpResponseRedirect(reverse('verUsuarios'))
     else:
-        return render(request, "admin/usuarios/nuevo/index.html", {})
+        es_administrador = request.user.groups.filter(name='Administrador').exists()
+        return render(request, "admin/usuarios/nuevo/index.html", {'es_administrador': es_administrador})
 
 @login_required
 def editarUsuario(request, idUsuario):
@@ -252,7 +261,8 @@ def editarUsuario(request, idUsuario):
         cursor = connection.cursor()
         cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
         usuario = dictfetchall(cursor)
-        return render(request, "admin/usuarios/editar/index.html", {'usuario': usuario})
+        es_administrador = request.user.groups.filter(name='Administrador').exists()
+        return render(request, "admin/usuarios/editar/index.html", {'usuario': usuario, 'es_administrador': es_administrador})
 
 @login_required
 def eliminarUsuario(request, idUsuario):
@@ -277,7 +287,8 @@ def editarWorkflow(request, idWorkflow):
         cursor = connection.cursor()
         cursor.execute("SELECT id, first_name, last_name FROM auth_user")
         usuarios = dictfetchall(cursor)
-    return render(request, "admin/workflowList/editarWorkflow/index.html", {'usuarios': usuarios, 'workflow': workflow})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/workflowList/editarWorkflow/index.html", {'usuarios': usuarios, 'workflow': workflow, 'es_administrador': es_administrador})
 
 @login_required
 def desactivarWorkflow(request, idWorkflow):
@@ -295,7 +306,7 @@ def activarWorkflow(request, idWorkflow):
 
 @login_required
 def crearSolicitud(request, idProceso):
-    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, fecha = datetime.date.today(), respuesta = '')
+    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, fecha = '0000-00-00', respuesta = '')
     solicitud.save()
     return HttpResponseRedirect(reverse('formulario', args=[solicitud.id]))
 
@@ -320,7 +331,8 @@ def formulario(request, idSolicitud):
         dataLog = serializers.serialize('json', [log_nuevo, ])
         dataPaso = serializers.serialize('json', '')
         comentarios_antiguos = serializers.serialize('json', '')
-    return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso, 'comentarios_antiguos': comentarios_antiguos})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso, 'comentarios_antiguos': comentarios_antiguos, 'es_administrador': es_administrador})
 
 @login_required
 def enviarFormulario(request, idLog):
@@ -352,6 +364,7 @@ def enviarFormulario(request, idLog):
             email.send()
         else:
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
+            solicitud.fecha = datetime.date.today()
             solicitud.respuesta = comentarios
             solicitud.save()
             usuario = User.objects.get(id=int(solicitud.usuario_id))
@@ -401,11 +414,13 @@ def historico(request, idSolicitud):
     cursor = connection.cursor()
     cursor.execute("SELECT u.username as estudiante, w.nombre as asunto, s.id as numero FROM modelos_solicitudes s INNER JOIN auth_user u ON u.id = s.usuario_id  INNER JOIN modelos_flujo_de_trabajo w ON w.id = s.flujos_id WHERE s.id = %s", [idSolicitud])
     solicitud = dictfetchall(cursor)
-    return render(request, "solicitudes/historico/index.html", {'logs': logs, 'solicitud': solicitud})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "solicitudes/historico/index.html", {'logs': logs, 'solicitud': solicitud, 'es_administrador': es_administrador})
 
 @login_required
 def reporteSolicitudesAbiertas(request):
     cursor = connection.cursor()
     cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id")
     solicitudes = dictfetchall(cursor)
-    return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+    return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes, 'es_administrador': es_administrador})

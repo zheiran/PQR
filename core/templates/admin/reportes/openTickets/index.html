@@ -34,7 +34,11 @@
         </tbody>
     </table>
     <h2>Porcentaje de Solicitudes Cerradas</h2>
-    <canvas id="doughnut" class="chart chart-doughnut" chart-data="data" chart-labels="labels" chart-colors="colors"></canvas> 
+    <canvas id="doughnut" class="chart chart-doughnut" chart-data="dataPie" chart-labels="labelsPie" chart-colors="colorsPie"></canvas> 
+    <h2>Numero de días de cada solicitud</h2>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataTicketDuracion" chart-labels="labelsTicketDuracion">chart-series="series"</canvas>
+    <h2>Número de solicitudes por días Abierta</h2>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataDias" chart-labels="labelsDias">chart-series="series"</canvas>
 </div>
 {% endblock%}
 

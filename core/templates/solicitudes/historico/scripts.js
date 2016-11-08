@@ -22,6 +22,14 @@
 			});
 
 		};
+
+	  	$scope.fechaLegible = function(fecha) {
+	  		if (typeof fecha == "undefined") {
+	  			return 'Sin Terminar...';
+	  		}
+	  		date = decodeDates(fecha);
+	  		return date[0]+'-'+date[1]+'-'+date[2];
+	  	};
 	});
 	angularApp.controller('modalController', function($scope, $uibModal, $uibModalInstance, loquesea) 	{
 	  	$scope.loquesea = loquesea;

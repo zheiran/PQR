@@ -9,8 +9,8 @@
 	                <th>Paso</th>
 	                <th>Agente</th>
 	                <th>Observaciones</th>
-	                <th>Fecha Inicio</th>
-	                <th>Fecha Fin</th>
+	                <th>Fecha Inicio (A-M-D)</th>
+	                <th>Fecha Fin (A-M-D)</th>
 	                <th>Detalle</th>
 	            </tr>
 	        </thead>
@@ -19,8 +19,8 @@
 	                <td>[[log.paso]]</td>
 	                <td>[[log.agente]]</td>
 	                <td>[[log.observaciones]]</td>
-	                <td>[[log.fecha]]</td>
-	                <td>[[logs[$index + 1].fecha]]</td>
+	                <td ng-bind="fechaLegible(log.fecha)"></td>
+	                <td ng-bind="fechaLegible(logs[$index + 1].fecha)"></td>
 	                <td>
 	                    <a href="" class="btn btn-info" ng-click="open($index)">Ver Detalle</a>
 	                </td>

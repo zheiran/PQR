@@ -13,5 +13,10 @@
 	  	$scope.historicoSolicitud = function(id) {
 	  		location = '{% url "historico" 101%}'.replace(/101/, id.toString());
 	  	};
+
+	  	$scope.fechaLegible = function(fecha) {
+	  		date = decodeDates(fecha);
+	  		return date[0]+'-'+date[1]+'-'+date[2];
+	  	};
 	});
 </script>

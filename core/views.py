@@ -406,6 +406,6 @@ def historico(request, idSolicitud):
 @login_required
 def reporteSolicitudesAbiertas(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id")
+    cursor.execute("SELECT s.id,(SELECT MIN(lg.fecha) FROM modelos_solicitudes_logs lg WHERE lg.solicitudes_id = s.id) AS fecha_inicio, s.fecha AS fecha_fin, s.respuesta, f.nombre as proceso, CONCAT(u.first_name,' ', u.last_name) AS usuario, (s.fecha - (SELECT MIN(lg.fecha) FROM modelos_solicitudes_logs lg WHERE lg.solicitudes_id = s.id)) as dias FROM  modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id ORDER BY s.id")
     solicitudes = dictfetchall(cursor)
     return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes})

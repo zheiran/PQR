@@ -1,5 +1,5 @@
 <script>
 	angularApp.controller('reporteOpenTicketController', function($scope) {
-	  	$scope.usuarios = decodeEntities('{{ usuarios }}');
+	  	$scope.solicitudes = decodeEntities('{{ solicitudes }}');
 	});
 </script>

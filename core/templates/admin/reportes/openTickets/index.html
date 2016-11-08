@@ -21,14 +21,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="solicitud in solicitudes|orderBy:'id'">
-                <td>Id</td>
-                <td>Estado</td>
-                <td>Fecha Inicio</td>
-                <td>Fecha Cierre</td>
-                <td>Tiempo Abierta</td>
-                <td>Asunto</td>
-                <td>Encargado</td>
+            <tr ng-repeat="solicitud in solicitudes">
+                <td>[[solicitud.id]]</td>
+                <td></td>
+                <td>[[solicitud.fecha_inicio]]</td>
+                <td>[[solicitud.fecha_fin]]</td>
+                <td>[[solicitud.dias]]</td>
+                <td>[[solicitud.proceso]]</td>
+                <td>[[solicitud.usuario]]</td>
             </tr>
         </tbody>
     </table>

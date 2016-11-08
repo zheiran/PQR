@@ -4,6 +4,7 @@
 	  	$scope.paso = decodeEntities('{{ paso }}');
 	  	$scope.comentarios = $scope.log[0].fields.comentarios;
 	  	$scope.mensaje = '';
+	  	$scope.comentarios_antiguos = decodeEntities('{{ comentarios_antiguos }}');
 	  	$scope.guardarEnviar = function() {
 	  		if ($scope.comentarios !== null && $scope.comentarios !== '') {
 	  			$scope.mensaje = '';

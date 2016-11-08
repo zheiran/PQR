@@ -4,6 +4,7 @@
 <div ng-controller="formularioController" class="row">
     <form name="formularioForm" method="POST">
         {% csrf_token %}
+        <div class="well" ng-if="comentarios_antiguos.length !== 0"><b>[[comentarios_antiguos[0].fields.comentarios]]</b></div>
         <div class="form-group">
             <label for="comentarios">Comentarios generales</label>
             <textarea class="form-control" id="comentarios" ng-model="comentarios" name="comentarios" placeholder="Agrega un comentario"></textarea>

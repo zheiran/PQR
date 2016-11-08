@@ -301,10 +301,14 @@ def crearSolicitud(request, idProceso):
 @login_required
 def formulario(request, idSolicitud):
     if Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).exists():
-        log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')[0]
-        dataLog = serializers.serialize('json', [log,])
-        if Pasos.objects.filter(id=int(log.pasos_id)).exists():
-            paso = Pasos.objects.filter(id=int(log.pasos_id))[0]
+        log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')
+        dataLog = serializers.serialize('json', [log[0],])
+        if len(log) > 1:
+            comentarios_antiguos = serializers.serialize('json', [log[1],])
+        else:
+            comentarios_antiguos = serializers.serialize('json', '')
+        if Pasos.objects.filter(id=int(log[0].pasos_id)).exists():
+            paso = Pasos.objects.filter(id=int(log[0].pasos_id))[0]
             dataPaso = serializers.serialize('json', [paso, ])
         else:
             dataPaso = serializers.serialize('json', '')
@@ -314,7 +318,8 @@ def formulario(request, idSolicitud):
         log_nuevo.save()
         dataLog = serializers.serialize('json', [log_nuevo, ])
         dataPaso = serializers.serialize('json', '')
-    return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso})
+        comentarios_antiguos = serializers.serialize('json', '')
+    return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso, 'comentarios_antiguos': comentarios_antiguos})
 
 @login_required
 def enviarFormulario(request, idLog):

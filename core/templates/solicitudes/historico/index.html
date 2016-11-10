@@ -1,6 +1,25 @@
 {% extends "base/base.html" %}
 
 {% block contenido %}
+	<style>
+		.colapsedRow {
+			transition: visibility 0s, opacity 0.5s linear;
+		}
+		.colapsedRow.oculto {
+			visibility: hidden!important;
+			opacity: 0!important;
+		}
+		.colapsedRow.oculto td {
+			display: none;
+		}
+		.colapsedRow.visible {
+			visibility: visible!important;
+			opacity: 1!important;
+		}
+		.colapsedRow.visible td {
+			display: table-cell;
+		}
+	</style>
 	<div class="row" ng-controller="historicoController">
 	    <h2>Historico Solicitud</h2>
 	    <p><b>Id:</b> [[solicitud[0].numero]]</p>
@@ -16,30 +35,21 @@
 	                <th>Detalle</th>
 	            </tr>
 	        </thead>
-	        <tbody>
-	            <tr ng-repeat="log in logs">
+	        <tbody ng-repeat="log in logs">
+            	<tr>
 	                <td>[[log.paso]]</td>
 	                <td>[[log.agente]]</td>
 	                <td ng-bind="fechaLegible(log.fecha)"></td>
 	                <td ng-bind="fechaLegible(logs[$index + 1].fecha)"></td>
 	                <td>
-	                    <a href="" class="btn btn-info" ng-click="open(log)">Ver Detalle</a>
+	                    <a href="" class="btn btn-info" ng-click="isCollapsed[$index] = !isCollapsed[$index]">Ver Detalle</a>
 	                </td>
-	            </tr>
+                </tr>
+                <tr class="colapsedRow" ng-class="isCollapsed[$index] ? 'visible' : 'oculto'">
+                	<td colspan="5"><p><b>Observación: </b> [[log.observaciones]]</p></td>
+                </tr>
 	        </tbody>
 	    </table>
-	    <script type="text/ng-template" id="detalleHistorico.html">
-	        <div class="modal-header">
-	            <h3 class="modal-title" id="modal-title">Detalle Paso</h3>
-	        </div>
-	        <div class="modal-body" id="modal-body">
-	            <h3>Observación</h3>
-	            <p ng-bind="row.observaciones"></p>
-	        </div>
-	        <div class="modal-footer">
-	            <button class="btn btn-warning" type="button" ng-click="close()">Cerrar</button>
-	        </div>
-	    </script>
 	</div>
 {% endblock%}
 

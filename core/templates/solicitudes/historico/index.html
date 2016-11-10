@@ -42,7 +42,7 @@
 	                <td ng-bind="fechaLegible(log.fecha)"></td>
 	                <td ng-bind="fechaLegible(logs[$index + 1].fecha)"></td>
 	                <td>
-	                    <a href="" class="btn btn-info" ng-click="isCollapsed[$index] = !isCollapsed[$index]">Ver Detalle</a>
+	                    <a href="" class="btn" ng-class="isCollapsed[$index] ? 'btn-danger' : 'btn-info'" ng-click="isCollapsed[$index] = !isCollapsed[$index]" ng-bind="isCollapsed[$index] ? 'Ocultar Detalle' : 'Ver Detalle'"></a>
 	                </td>
                 </tr>
                 <tr class="colapsedRow" ng-class="isCollapsed[$index] ? 'visible' : 'oculto'">

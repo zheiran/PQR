@@ -10,7 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db import connection
 from django.core.mail import EmailMessage
-import datetime
+from django.conf import settings
+import pytz
+import datetime, requests
 
 from .forms import RegistroForm
 from modelos.models import Flujo_de_trabajo, Pasos, Solicitudes, Solicitudes_logs
@@ -76,6 +78,7 @@ def home(request):
     cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])
     usuario = dictfetchall(cursor)
     es_administrador = request.user.groups.filter(name='Administrador').exists()
+    # enviar_mensaje();
     return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario, 'es_administrador': es_administrador})
 
 @login_required
@@ -316,17 +319,20 @@ def formulario(request, idSolicitud):
         log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')
         dataLog = serializers.serialize('json', [log[0],])
         if len(log) > 1:
-            comentarios_antiguos = serializers.serialize('json', [log[1],])
+            cursor = connection.cursor()
+            cursor.execute("SELECT sl.id, sl.comentarios, sl.fecha at time zone 'America/Bogota' as fecha, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN auth_user u ON u.id = sl.usuario_id WHERE sl.solicitudes_id = %s ORDER BY sl.id desc", [int(idSolicitud)])
+            comentarios_antiguos = dictfetchall(cursor)
         else:
             comentarios_antiguos = serializers.serialize('json', '')
         if Pasos.objects.filter(id=int(log[0].pasos_id)).exists():
-            paso = Pasos.objects.filter(id=int(log[0].pasos_id))[0]
-            dataPaso = serializers.serialize('json', [paso, ])
+            cursor = connection.cursor()
+            cursor.execute("SELECT p.*, u.first_name, u.last_name, f.nombre as proceso FROM modelos_pasos p INNER JOIN auth_user u ON u.id = p.usuario_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = p.flujos_id WHERE p.id = %s", [int(log[0].pasos_id)])
+            dataPaso = dictfetchall(cursor)
         else:
             dataPaso = serializers.serialize('json', '')
     else:
         solicitud = Solicitudes.objects.get(id=int(idSolicitud))
-        log_nuevo = Solicitudes_logs(pasos_id = 0, solicitudes_id = int(idSolicitud), usuario_id = request.user.id, fecha = datetime.date.today())
+        log_nuevo = Solicitudes_logs(pasos_id = 0, solicitudes_id = int(idSolicitud), usuario_id = request.user.id, fecha = datetime.datetime.now(pytz.timezone('America/Bogota')))
         log_nuevo.save()
         dataLog = serializers.serialize('json', [log_nuevo, ])
         dataPaso = serializers.serialize('json', '')
@@ -348,7 +354,7 @@ def enviarFormulario(request, idLog):
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
             paso_nuevo = Pasos.objects.filter(flujos_id=int(solicitud.flujos_id), numero=1)
         if paso_nuevo.exists():
-            log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
+            log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.datetime.now(pytz.timezone('America/Bogota')))
             log_nuevo.save()
             usuario = User.objects.get(id=int(paso_nuevo[0].usuario_id))
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
@@ -389,7 +395,7 @@ def devolverFormulario(request, idLog):
         log.save()
         paso_antiguo = Pasos.objects.get(id=int(log.pasos_id))
         paso_nuevo = Pasos.objects.filter(flujos_id=int(paso_antiguo.flujos_id), numero=int(paso_antiguo.numero-1))
-        log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.date.today())
+        log_nuevo = Solicitudes_logs(pasos_id = int(paso_nuevo[0].id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_nuevo[0].usuario_id), fecha = datetime.datetime.now(pytz.timezone('America/Bogota')))
         log_nuevo.save()
         usuario = User.objects.get(id=int(paso_nuevo[0].usuario_id))
         solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
@@ -424,3 +430,23 @@ def reporteSolicitudesAbiertas(request):
     solicitudes = dictfetchall(cursor)
     es_administrador = request.user.groups.filter(name='Administrador').exists()
     return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes, 'es_administrador': es_administrador})
+
+def enviar_mensaje():
+    return requests.post(
+        "https://api.mailgun.net/v3/sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org/messages",
+        auth=("api", "key-6d108fb1840523eeadc46cef96bc23b8"),
+        data={"from": "Mailgun Sandbox <postmaster@sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org>",
+              "to": "Santiago moreno <sanator03@gmail.com>",
+              "subject": "Hello Santiago moreno",
+              "text": "Congratulations Santiago moreno, you just sent an email with Mailgun!  You are truly awesome!  You can see a record of this email in your logs: https://mailgun.com/cp/log .  You can send up to 300 emails/day from this sandbox server.  Next, you should add your own domain so you can send 10,000 emails/month for free."})
+
+def guardarFormulario(request, idLog):
+    if request.method == 'POST':
+        comentarios = request.POST['comentarios']
+        log = Solicitudes_logs.objects.get(id=int(idLog))
+        log.comentarios = comentarios
+        log.save()
+        paso_antiguo = Pasos.objects.get(id=int(log.pasos_id))
+        log_nuevo = Solicitudes_logs(pasos_id = int(paso_antiguo.id), solicitudes_id = int(log.solicitudes_id), usuario_id = int(paso_antiguo.usuario_id), fecha = datetime.datetime.now(pytz.timezone('America/Bogota')))
+        log_nuevo.save()
+    return HttpResponseRedirect(reverse('home'))

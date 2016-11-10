@@ -8,7 +8,11 @@
 	  			return 'Sin Responder...';
 	  		}
 	  		date = decodeDates(fecha);
-	  		return date[0]+'-'+date[1]+'-'+date[2];
+	  		if (date[3] !== undefined) {
+	  			return date[0]+'-'+date[1]+'-'+date[2]+' '+date[3]+':'+date[4];
+	  		}else{
+	  			return date[0]+'-'+date[1]+'-'+date[2];
+	  		}
 	  	};
 	});
 </script>

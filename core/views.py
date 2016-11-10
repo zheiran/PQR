@@ -415,7 +415,7 @@ def devolverFormulario(request, idLog):
 @login_required
 def historico(request, idSolicitud):
     cursor = connection.cursor()
-    cursor.execute("SELECT l.pasos_id as paso, u.username as agente, l.comentarios as observaciones, l.fecha as fecha FROM modelos_solicitudes_logs l INNER JOIN auth_user u ON u.id = l.usuario_id WHERE l.solicitudes_id = %s", [idSolicitud])
+    cursor.execute("SELECT p.nombre as paso, CONCAT(u.first_name,' ', u.last_name) as agente, l.comentarios as observaciones, l.fecha as fecha FROM modelos_solicitudes_logs l INNER JOIN auth_user u ON u.id = l.usuario_id INNER JOIN modelos_pasos p ON p.id = l.pasos_id WHERE l.solicitudes_id = %s", [idSolicitud])
     logs = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT u.username as estudiante, w.nombre as asunto, s.id as numero FROM modelos_solicitudes s INNER JOIN auth_user u ON u.id = s.usuario_id  INNER JOIN modelos_flujo_de_trabajo w ON w.id = s.flujos_id WHERE s.id = %s", [idSolicitud])

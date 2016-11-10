@@ -22,6 +22,9 @@
     			re = /datetime.date\((.+?)\)/g,
         		subst = '"$1"';
     			str = str.replace(re, subst);
+    			re = /datetime.datetime\((.+?)\)/g,
+        		subst = '"$1"';
+    			str = str.replace(re, subst);
 		      	str = JSON.parse(str);
 		  	return str;
 		}

@@ -24,6 +24,6 @@ class Solicitudes_logs(models.Model):
 	pasos_id = models.IntegerField(blank = True, null = True)
 	solicitudes_id = models.IntegerField(blank = True, null = True)
 	usuario_id = models.IntegerField(blank = True, null = True)
-	fecha = models.DateField()
+	fecha = models.DateTimeField()
 	ruta_archivos = models.TextField(blank = True, null = True)
 	comentarios = models.TextField(blank = True, null = True)

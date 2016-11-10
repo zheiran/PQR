@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^solicitudes/(?P<idSolicitud>\d+)/formulario/$', views.formulario, name='formulario'),
     url(r'^solicitudes/(?P<idLog>\d+)/formulario/enviar/$', views.enviarFormulario, name='enviarFormulario'),
     url(r'^solicitudes/(?P<idLog>\d+)/formulario/devolver/$', views.devolverFormulario, name='devolverFormulario'),
+    url(r'^solicitudes/(?P<idLog>\d+)/formulario/guardar/$', views.guardarFormulario, name='guardarFormulario'),
     url(r'^solicitudes/(?P<idSolicitud>\d+)/historico/$', views.historico, name='historico'),
     url(r'^administracion/reporteSolicitudesAbiertas/$', views.reporteSolicitudesAbiertas, name='reporteSolicitudesAbiertas'),
 ]

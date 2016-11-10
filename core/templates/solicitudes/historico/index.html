@@ -22,7 +22,6 @@
 	</style>
 	<div class="row" ng-controller="historicoController">
 	    <h2>Historico Solicitud</h2>
-	    <p><b>Id:</b> [[solicitud[0].numero]]</p>
 	    <p><b>Asunto:</b> [[solicitud[0].asunto]]</p>
 	    <p><b>Estudiante:</b> [[solicitud[0].estudiante]]</p>
 	    <table class="table">
@@ -37,7 +36,7 @@
 	        </thead>
 	        <tbody ng-repeat="log in logs">
             	<tr>
-	                <td>[[log.paso]]</td>
+	                <td ng-bind="log.paso=='' ? 'Petición' : log.paso">[[]]</td>
 	                <td>[[log.agente]]</td>
 	                <td ng-bind="fechaLegible(log.fecha)"></td>
 	                <td ng-bind="fechaLegible(logs[$index + 1].fecha)"></td>

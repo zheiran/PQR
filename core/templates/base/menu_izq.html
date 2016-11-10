@@ -2,7 +2,7 @@
 <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse">
         <ul class="nav" id="side-menu">
-            {% if es_administrador %}
+            {% if rol == 'Administrador' %}
                 <li>
                     <a href="#"><i class="fa fa-dashboard fa-fw"></i> Gestión de Procesos<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
@@ -40,6 +40,11 @@
                         <li>
                             <a href="{% url 'home' %}"><i class="fa fa-table fa-fw"></i>Ver solicitudes</a>
                         </li>
+                        {% if rol == 'Agente' %}
+                            <li>
+                                <a href="{% url 'solicitudesPasadas' %}"><i class="fa fa-table fa-fw"></i>Ver solicitudes pasadas</a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </li>
             {% endif %}

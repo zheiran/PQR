@@ -4,9 +4,14 @@
 <div ng-controller="formularioController" class="row">
     <form name="formularioForm" method="POST">
         {% csrf_token %}
-        <center><h2>[[paso[0].nombre]]</h2></center>
-        <p><b>Proceso:</b> [[paso[0].proceso]]</p>
-        <p><b>Solicitante:</b> [[paso[0].first_name+' '+paso[0].last_name]]</p>
+        <div ng-if="comentarios_antiguos.length !== 0">
+            <center><h2>[[paso[0].nombre]]</h2></center>
+            <p><b>Proceso:</b> [[paso[0].proceso]]</p>
+            <p><b>Solicitante:</b> [[paso[0].first_name+' '+paso[0].last_name]]</p>
+        </div>
+        <div ng-if="comentarios_antiguos.length === 0">
+            <center><h2>Petición de solicitud</h2></center>
+        </div>
         <div class="form-group">
             <label for="comentarios">Comentarios generales</label>
             <textarea class="form-control" id="comentarios" ng-model="comentarios" name="comentarios" placeholder="Agrega un comentario"></textarea>
@@ -20,6 +25,7 @@
             <button type="button" class="btn btn-warning" ng-if="paso[0].numero !== 1" ng-click="guardarDevolver()">Guardar y devolver</button>
             <button type="button" class="btn btn-success" ng-click="guardarEnviar()">Guardar y enviar</button>
         </div>
+        <label for="comentarios" ng-if="comentarios_antiguos.length !== 0" >Comentarios realizados</label>
         <div class="well" ng-if="comentarios_antiguos.length !== 0" style="max-height: 300px; overflow-y: scroll;"><p ng-repeat="comentarios in comentarios_antiguos" ng-if="comentarios.comentarios !== null"><b><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>[[comentarios.comentarios]]</b><small> ([[comentarios.first_name+' '+comentarios.last_name]]: [[fechaLegible(comentarios.fecha)]])</small></p></div>
     </form>
 </div>

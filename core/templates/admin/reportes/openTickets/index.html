@@ -5,6 +5,15 @@
 {% endblock%}
 
 {% block contenido %}
+<style>
+tr:nth-child(even),th {
+    background-color: #b9bbff;
+}
+.table-responsive {
+    max-height: 410px;
+    overflow: scroll;
+}
+</style>
 <div ng-controller="reporteOpenTicketController">
 	<h2>Solicitudes Abiertas vs Cerradas</h2>
 	{% csrf_token %}

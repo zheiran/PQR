@@ -12,18 +12,16 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Id</th>
                     <th>Estado</th>
                     <th>Fecha Inicio (A-M-D)</th>
                     <th>Fecha Cierre (A-M-D)</th>
-                    <th>Días Abierta</th>
+                    <th>Días hábiles Abierta</th>
                     <th>Asunto</th>
                     <th>Encargado</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="solicitud in solicitudes">
-                    <td>[[solicitud.id]]</td>
                     <td ng-if="solicitud.respuesta!=''">Cerrado</td>
                     <td ng-if="solicitud.respuesta==''">Abierto</td>
                     <td ng-bind="fechaLegible(solicitud.fecha_inicio)"></td>

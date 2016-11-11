@@ -360,8 +360,10 @@ def enviarFormulario(request, idLog):
             proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
             encargado = User.objects.get(id=int(proceso.usuario_id))
 
-            body = 'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
-            enviar_mensaje([usuario.email, encargado.email, 'sanator03@gmail.com'], 'Una nueva solicitud se le ha sido asignada', body)
+            body = 'Estimado usuario, <br> La solicitud con identificación '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
+            enviar_mensaje(usuario.email, 'Una nueva solicitud se le ha sido asignada', body)
+            enviar_mensaje(encargado.email, 'Una nueva solicitud se le ha sido asignada', body)
+            enviar_mensaje("sanator03@gmail.com", 'Una nueva solicitud se le ha sido asignada', body)
         else:
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
             solicitud.fecha = datetime.date.today()
@@ -371,8 +373,10 @@ def enviarFormulario(request, idLog):
             proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
             encargado = User.objects.get(id=int(proceso.usuario_id))
 
-            body = 'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.'
-            enviar_mensaje([usuario.email, encargado.email, 'sanator03@gmail.com'], 'Una solicitud ha sido resuelta', body)
+            body = 'Estimado usuario, <br> La solicitud  con identificación '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.'
+            enviar_mensaje(encargado.email, 'Una solicitud ha sido resuelta', body)
+            enviar_mensaje(usuario.email, 'Una solicitud ha sido resuelta', body)
+            enviar_mensaje("sanator03@gmail.com", 'Una solicitud ha sido resuelta', body)
     return HttpResponseRedirect(reverse('home'))
 
 @login_required
@@ -391,8 +395,10 @@ def devolverFormulario(request, idLog):
         proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
         encargado = User.objects.get(id=int(proceso.usuario_id))
 
-        body = 'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
-        enviar_mensaje([usuario.email, encargado.email, 'sanator03@gmail.com'], 'Una nueva solicitud se le ha sido devuelta', body)
+        body = 'Estimado usuario, <br> La solicitud con identificación '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
+        enviar_mensaje(usuario.email, 'Una nueva solicitud se le ha sido devuelta', body)
+        enviar_mensaje(encargado.email, 'Una nueva solicitud se le ha sido devuelta', body)
+        enviar_mensaje("sanator03@gmail.com", 'Una nueva solicitud se le ha sido devuelta', body)
     return HttpResponseRedirect(reverse('home'))
 
 
@@ -421,8 +427,18 @@ def enviar_mensaje(para, asunto, body):
         auth=("api", "key-6d108fb1840523eeadc46cef96bc23b8"),
         data={"from": "PQR <postmaster@sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org>",
               "to": para,
+              "cc": "sanator03@gmail.com",
               "subject": asunto,
-              "text": body})
+              "text": body,
+              "html": body})
+    # return requests.post(
+    #     "https://api.mailgun.net/v3/sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org/messages",
+    #     auth=("api", "key-6d108fb1840523eeadc46cef96bc23b8"),
+    #     data={"from": "PQR <postmaster@sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org>",
+    #           "to": 'sanator03@gmail.com',
+    #           "subject": 'un asunto',
+    #           "text": 'escribo al mas'})
+    
 
 @login_required
 def guardarFormulario(request, idLog):

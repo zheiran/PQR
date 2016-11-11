@@ -416,7 +416,7 @@ def historico(request, idSolicitud):
 @login_required
 def reporteSolicitudesAbiertas(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT s.id,(SELECT MIN(lg.fecha) FROM modelos_solicitudes_logs lg WHERE lg.solicitudes_id = s.id)::date at time zone 'America/Bogota' AS fecha_inicio, s.fecha at time zone 'America/Bogota' AS fecha_fin, 1 as dias, s.respuesta, f.nombre as proceso, CONCAT(u.first_name,' ', u.last_name) AS usuario FROM  modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id ORDER BY s.id")
+    cursor.execute("SELECT s.id,(SELECT MIN(lg.fecha) FROM modelos_solicitudes_logs lg WHERE lg.solicitudes_id = s.id)::date at time zone 'America/Bogota' AS fecha_inicio, s.fecha at time zone 'America/Bogota' AS fecha_fin, 1 AS dias, s.respuesta, f.nombre AS proceso, CONCAT(u.first_name,' ', u.last_name) AS usuario, (SELECT SUM(ps.duracion) FROM modelos_pasos ps WHERE ps.flujos_id = f.id) AS esperado FROM  modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id ORDER BY s.id")
     solicitudes = dictfetchall(cursor)
     rol = request.user.groups.get().name
     return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes, 'rol': rol})

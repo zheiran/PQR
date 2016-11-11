@@ -25,6 +25,7 @@ tr:nth-child(even),th {
                     <th>Fecha Inicio (A-M-D)</th>
                     <th>Fecha Cierre (A-M-D)</th>
                     <th>Días hábiles Abierta</th>
+                    <th>Días Esperados</th>
                     <th>Asunto</th>
                     <th>Encargado</th>
                 </tr>
@@ -36,6 +37,7 @@ tr:nth-child(even),th {
                     <td ng-bind="fechaLegible(solicitud.fecha_inicio)"></td>
                     <td ng-bind="fechaLegible(solicitud.fecha_fin)"></td>
                     <td>[[solicitud.dias]]</td>
+                    <td>[[solicitud.esperado]]</td>
                     <td>[[solicitud.proceso]]</td>
                     <td>[[solicitud.usuario]]</td>
                 </tr>
@@ -46,8 +48,10 @@ tr:nth-child(even),th {
     <canvas id="doughnut" class="chart chart-doughnut" chart-data="dataPie" chart-labels="labelsPie" chart-colors="colorsPie"></canvas> 
     <h2>Numero de días de cada solicitud</h2>
     <canvas id="bar" class="chart chart-bar" chart-data="dataTicketDuracion" chart-labels="labelsTicketDuracion">chart-series="series"</canvas>
-    <h2>Número de solicitudes por días Abierta</h2>
+    <h2>Número de solicitudes por días</h2>
     <canvas id="bar" class="chart chart-bar" chart-data="dataDias" chart-labels="labelsDias">chart-series="series"</canvas>
+    <h2>Porcentaje de Tickets resueltos en un tiempo esperado o menor</h2>
+    <canvas id="doughnut" class="chart chart-doughnut" chart-data="dataEfectividadPie" chart-labels="labelsEfectividadPie" chart-colors="colorsEfectividadPie"></canvas> 
 </div>
 {% endblock%}
 

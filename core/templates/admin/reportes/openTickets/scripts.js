@@ -3,6 +3,8 @@
 		//Definir Variables
 	  	var openTicket = 0,
 	  		closeTicket = 0,
+	  		TicketEfectivo = 0,
+	  		TicketNoEfectivo = 0,
 	  		porcenOpen = 0,
 	  		porcenClose = 0,
 	  		diasTicket = new Array(),
@@ -74,6 +76,7 @@
 	  	};
 	  	//Ciclo para calcular los valores de las graficas
 	  	$scope.solicitudes.forEach(function(entry, index) {
+	  		//proceso para calcular los días hábiles
 	  		if ( entry.fecha_fin == 'undefined' || entry.fecha_fin == null) {
 	  			var fecha_inicio = decodeDates(entry.fecha_inicio);
 	  			var date1 = new Date(fecha_inicio[0], fecha_inicio[1]-1, fecha_inicio[2], fecha_inicio[3], fecha_inicio[4]),
@@ -96,6 +99,15 @@
 			else {
 				openTicket ++;
 			}
+
+	  		//Suma de tickets eficaces
+			if ( diasHabiles > entry.esperado ) {
+				TicketNoEfectivo ++; 
+			}
+			else {
+				TicketEfectivo ++;
+			}
+
 			//Cantidades de tickets abiertos por la misma cantidad de días
 			if (typeof diasTicket[diasHabiles]  == 'undefined') {
 				diasTicket[diasHabiles] = 1;
@@ -109,12 +121,20 @@
 			idTicket.push('Solicitud #'+entry.id);
   			duracionTicket.push(diasHabiles);
 		});
-		//Valores relacionados a los porcentajes de la grafica de pie
+
+		//Valores relacionados a los porcentajes de la gráfica de tickets abiertos y cerrados
 		porcenOpen = openTicket*100/(openTicket+closeTicket);
 		porcenClose = closeTicket*100/(openTicket+closeTicket);
 	  	$scope.labelsPie = ['Abiertos ' + porcenOpen + '% ', 'Cerrados ' + porcenClose + '% '];
   		$scope.dataPie = [openTicket, closeTicket];
   		$scope.colorsPie = ['#E13232', '#10CD5E'];
+
+		//Valores relacionados a los porcentajes de la gráfica de tickets efectivos y no efectivos
+		porcenEfect = TicketEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
+		porcenNoEfect = TicketNoEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
+	  	$scope.labelsEfectividadPie = ['No Eficientes ' + porcenNoEfect + '% ', 'Eficientes ' + porcenEfect + '% '];
+  		$scope.dataEfectividadPie = [TicketNoEfectivo, TicketEfectivo];
+  		$scope.colorsEfectividadPie = ['#E13232', '#46bfbd'];
   		//Valores relacionados a la grafica de solicitudesXdias
   		diasTicket.forEach(function(entry,index) {
   			diferentesDias.push(index + ' Días ');

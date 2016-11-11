@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^registro/$', views.registro, name='registro'),
     url(r'^solicitudes/$', views.home, name='home'),
     url(r'^solicitudes/pasadas/$', views.solicitudesPasadas, name='solicitudesPasadas'),
+    url(r'^solicitudes/encargadas/$', views.solicitudesEncargadas, name='solicitudesEncargadas'),
     url(r'^cerrarSesion/$', views.cerrarSesion, name='cerrarSesion'),
     url(r'^administracion/workflow/list/$', views.workflowList, name='workflowList'),
     url(r'^administracion/workflow/nuevo/$', views.nuevoWorkflow, name='nuevoWorkflow'),

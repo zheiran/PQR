@@ -359,14 +359,9 @@ def enviarFormulario(request, idLog):
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
             proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
             encargado = User.objects.get(id=int(proceso.usuario_id))
-            email = EmailMessage(
-                'Una nueva solicitud se le ha sido asignada',
-                'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.',
-                'pqr@pqr.com',
-                [usuario.email, encargado.email],
-            )
-            email.content_subtype = "html"
-            email.send()
+
+            body = 'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
+            enviar_mensaje([usuario.email, encargado.email, 'sanator03@gmail.com'], 'Una nueva solicitud se le ha sido asignada', body)
         else:
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
             solicitud.fecha = datetime.date.today()
@@ -375,14 +370,9 @@ def enviarFormulario(request, idLog):
             usuario = User.objects.get(id=int(solicitud.usuario_id))
             proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
             encargado = User.objects.get(id=int(proceso.usuario_id))
-            email = EmailMessage(
-                'Una solicitud ha sido resuelta',
-                'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.',
-                'pqr@pqr.com',
-                [usuario.email, encargado.email],
-            )
-            email.content_subtype = "html"
-            email.send()
+
+            body = 'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.'
+            enviar_mensaje([usuario.email, encargado.email, 'sanator03@gmail.com'], 'Una solicitud ha sido resuelta', body)
     return HttpResponseRedirect(reverse('home'))
 
 @login_required
@@ -400,14 +390,9 @@ def devolverFormulario(request, idLog):
         solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
         proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
         encargado = User.objects.get(id=int(proceso.usuario_id))
-        email = EmailMessage(
-            'Una nueva solicitud se le ha sido devuelta',
-            'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.',
-            'pqr@pqr.com',
-            [usuario.email, encargado.email],
-        )
-        email.content_subtype = "html"
-        email.send()
+
+        body = 'Estimado usuario, <br> La solicitud '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
+        enviar_mensaje([usuario.email, encargado.email, 'sanator03@gmail.com'], 'Una nueva solicitud se le ha sido devuelta', body)
     return HttpResponseRedirect(reverse('home'))
 
 
@@ -430,14 +415,14 @@ def reporteSolicitudesAbiertas(request):
     rol = request.user.groups.get().name
     return render(request, "admin/reportes/openTickets/index.html", {'solicitudes': solicitudes, 'rol': rol})
 
-def enviar_mensaje():
+def enviar_mensaje(para, asunto, body):
     return requests.post(
         "https://api.mailgun.net/v3/sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org/messages",
         auth=("api", "key-6d108fb1840523eeadc46cef96bc23b8"),
-        data={"from": "Mailgun Sandbox <postmaster@sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org>",
-              "to": "Santiago moreno <sanator03@gmail.com>",
-              "subject": "Hello Santiago moreno",
-              "text": "Congratulations Santiago moreno, you just sent an email with Mailgun!  You are truly awesome!  You can see a record of this email in your logs: https://mailgun.com/cp/log .  You can send up to 300 emails/day from this sandbox server.  Next, you should add your own domain so you can send 10,000 emails/month for free."})
+        data={"from": "PQR <postmaster@sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org>",
+              "to": para,
+              "subject": asunto,
+              "text": body})
 
 @login_required
 def guardarFormulario(request, idLog):
@@ -463,4 +448,20 @@ def solicitudesPasadas(request):
     cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])
     usuario = dictfetchall(cursor)
     rol = request.user.groups.get().name
-    return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario, 'rol': rol})
+    pasadas = True;
+    return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario, 'rol': rol, 'pasadas': pasadas})
+
+@login_required
+def solicitudesEncargadas(request):
+    cursor = connection.cursor()
+    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE f.usuario_id = %s", [request.user.id])
+    solicitudes = dictfetchall(cursor)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")
+    procesos = dictfetchall(cursor)
+    cursor = connection.cursor()
+    cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])
+    usuario = dictfetchall(cursor)
+    rol = request.user.groups.get().name
+    encargadas = True;
+    return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario, 'rol': rol, 'encargadas': encargadas})

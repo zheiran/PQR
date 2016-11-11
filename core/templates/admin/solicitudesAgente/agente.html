@@ -7,16 +7,18 @@
 {% block contenido %}
     <div class="row" ng-controller="solicitudesAgenteController">
         <h2>Solicitudes asignadas al agente (Nombre del agente)</h2>
-
-        <table border="1">
-            <tr>
-                <td>Número</td>
-                <td>Asunto</td>
-            </tr>
-            <tr ng-repeat="solicitud in solicitudes">
-                <td>[[0]]</td>
-                <td><a href="#"></a>[[1]]</a></td>
-        </table>
+        <div class="table-responsive">
+            <table border="1">
+                <tr>
+                    <td>Número</td>
+                    <td>Asunto</td>
+                </tr>
+                <tr ng-repeat="solicitud in solicitudes">
+                    <td>[[0]]</td>
+                    <td><a href="#"></a>[[1]]</a></td>
+                </tr>
+            </table>
+        </div>
     </div>
 {% endblock %}
 

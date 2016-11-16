@@ -47,7 +47,7 @@
 		
 	  	//Recibir Informacion desde python
 	  	$scope.solicitudes = decodeEntities('{{ solicitudes }}');
-	  	console.log($scope.solicitudes);
+	  	
 	  	//Función para imprimir la fecha de mejor forma
 	  	$scope.fechaLegible = function(fecha) {
 	  		if (typeof fecha == 'undefined' || fecha == null) {
@@ -62,7 +62,7 @@
 	  		if ( entry.fecha_fin == 'undefined' || entry.fecha_fin == null) {
 	  			var fecha_inicio = decodeDates(entry.fecha_inicio);
 	  			var date1 = new Date(fecha_inicio[0], fecha_inicio[1]-1, fecha_inicio[2], fecha_inicio[3], fecha_inicio[4]),
-	  				date2 = new Date(2016,10,12);
+	  				date2 = new Date();
 				var diasHabiles = days_between(date1, date2);
 				$scope.solicitudes[index].dias = diasHabiles;
 	  		} else {

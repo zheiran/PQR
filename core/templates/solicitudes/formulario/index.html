@@ -16,6 +16,14 @@
         <div class="form-group">
             <label for="comentarios">Comentarios generales</label>
             <textarea class="form-control" id="comentarios" ng-model="comentarios" name="comentarios" placeholder="Agrega un comentario"></textarea>
+            <div>
+                <a onClick="mostrarAdjuntar()">Adjuntar</a>
+            </div>
+            <div id="adjuntar" name="adjuntar" style="display: none;">
+               
+                <input class="form-control" ng-model="docfile" type="file" name="docfile" id="docfile">
+                  
+            </div>
             <div class="alert alert-danger" role="alert" ng-if="mensaje !== ''">[[mensaje]]</div>
         </div>
         <div class="form-group" ng-if="paso.length === 0">

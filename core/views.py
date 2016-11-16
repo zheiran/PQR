@@ -365,6 +365,8 @@ def enviarFormulario(request, idLog):
         comentarios = request.POST['comentarios']
         log = Solicitudes_logs.objects.get(id=int(idLog))
         log.comentarios = comentarios
+        log.ruta_archivos = request.POST['docfile']
+
         log.save()
         if Pasos.objects.filter(id=int(log.pasos_id)).exists():
             paso_antiguo = Pasos.objects.get(id=int(log.pasos_id))

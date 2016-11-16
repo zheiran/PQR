@@ -13,6 +13,8 @@
 	  		}else{
 	  			$scope.mensaje = 'Este formulario no se puede enviar debido a que no ha relizado ningun comentario.';
 	  		};
+	  		
+
 	  	};
 
 	  	$scope.guardarDevolver = function() {
@@ -52,4 +54,9 @@
 		};
 	  	
 	});
+
+	function mostrarAdjuntar()
+	{
+		document.getElementById('adjuntar').style.display = "block";
+	}
 </script>

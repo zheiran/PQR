@@ -1,5 +1,5 @@
 <script>
-	angularApp.controller('solicitudesController', function($scope) {
+	angularApp.controller('solicitudesController', function($scope) {console.log('{{ solicitudes }}');
 	  	$scope.solicitudes = decodeEntities('{{ solicitudes }}');
 	  	$scope.procesos = decodeEntities('{{ procesos }}');
 	  	$scope.usuario = decodeEntities('{{ usuario }}');

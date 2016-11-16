@@ -13,6 +13,7 @@
 					element.textContent = '';
 			  	}
 			  	str = str.replace(/'/g, '"');
+			  	str = str.replace(/: u"/g, ': "');
 		      	str = str.replace(/ F/g, ' f');
 		      	str = str.replace(/ T/g, ' t');
 		      	str = str.replace(/ None/g, ' null');

@@ -22,9 +22,12 @@ def inicio(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse('home'))
+        if user.is_active:
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('home'))
+            else:
+                return HttpResponseRedirect(reverse('inicio'))
         else:
             return HttpResponseRedirect(reverse('inicio'))
     else:
@@ -46,12 +49,18 @@ def registro(request):
             user.first_name = first_name
             user.last_name = last_name
             user.save()
-            grupo = Group.objects.filter(name="Estudiante")
-            user = User.objects.get(pk=user.id)
+            grupo = Group.objects.filter(name="Administrador")
             if grupo.exists():
-                user.groups.add(grupo[0])
+                grupo = Group.objects.filter(name="Estudiante")
+                user = User.objects.get(pk=user.id)
+                if grupo.exists():
+                    user.groups.add(grupo[0])
+                else:
+                    grupo = Group(name="Estudiante")
+                    grupo.save()
+                    user.groups.add(grupo)
             else:
-                grupo = Group(name="Estudiante")
+                grupo = Group(name="Administrador")
                 grupo.save()
                 user.groups.add(grupo)
  
@@ -65,7 +74,8 @@ def registro(request):
 def home(request):
     cursor = connection.cursor()
     if request.user.groups.filter(name='Estudiante').exists():
-        cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s", [request.user.id])
+        # cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s", [request.user.id])
+        cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name, COUNT(sl.id) as contar FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s group by s.id, f.id, u.id", [request.user.id])
     elif request.user.groups.filter(name='Agente').exists():
         cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE (sl.comentarios = '') IS NOT FALSE AND sl.usuario_id = %s", [request.user.id])
     else:
@@ -199,7 +209,7 @@ def editarPaso(request, idWorkflow, idPaso):
 @login_required
 def verUsuarios(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id")
+    cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo, u.is_active FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id")
     usuarios = dictfetchall(cursor)
     rol = request.user.groups.get().name
     return render(request, "admin/usuarios/index.html", {'usuarios': usuarios, 'rol': rol})
@@ -269,7 +279,15 @@ def editarUsuario(request, idUsuario):
 @login_required
 def eliminarUsuario(request, idUsuario):
     usuario = User.objects.get(id=int(idUsuario))
-    usuario.delete()
+    usuario.is_active = False
+    usuario.save()
+    return HttpResponseRedirect(reverse('verUsuarios'))
+
+@login_required
+def activarUsuario(request, idUsuario):
+    usuario = User.objects.get(id=int(idUsuario))
+    usuario.is_active = True
+    usuario.save()
     return HttpResponseRedirect(reverse('verUsuarios'))
 
 @login_required
@@ -439,14 +457,6 @@ def enviar_mensaje(para, asunto, body):
               "subject": asunto,
               "text": body,
               "html": body})
-    # return requests.post(
-    #     "https://api.mailgun.net/v3/sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org/messages",
-    #     auth=("api", "key-6d108fb1840523eeadc46cef96bc23b8"),
-    #     data={"from": "PQR <postmaster@sandbox66f69a0d33ed4ab8add25d0cc543a6a6.mailgun.org>",
-    #           "to": 'sanator03@gmail.com',
-    #           "subject": 'un asunto',
-    #           "text": 'escribo al mas'})
-    
 
 @login_required
 def guardarFormulario(request, idLog):
@@ -489,3 +499,11 @@ def solicitudesEncargadas(request):
     rol = request.user.groups.get().name
     encargadas = True;
     return render(request, "solicitudes/index.html", {'solicitudes': solicitudes, 'procesos': procesos, 'usuario': usuario, 'rol': rol, 'encargadas': encargadas})
+
+@login_required
+def eliminarSolicitud(request, idSolicitud):
+    solicitudLog = Solicitudes_logs.objects.get(solicitudes_id=int(idSolicitud))
+    solicitudLog.delete()
+    solicitud = Solicitudes.objects.get(id=int(idSolicitud))
+    solicitud.delete()
+    return HttpResponseRedirect(reverse('home'))

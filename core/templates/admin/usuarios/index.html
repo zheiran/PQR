@@ -27,7 +27,8 @@
                     <td>[[usuario.grupo]]</td>
                     <td>
                         <a href="" class="btn btn-info" ng-click="editar(usuario.id)">Editar</a>
-                        <a href="" class="btn btn-danger" ng-click="eliminar(usuario.id)">Eliminar</a>
+                        <a href="" class="btn btn-danger" ng-if="usuario.is_active" ng-click="eliminar(usuario.id)">Desactivar</a>
+                        <a href="" class="btn btn-success" ng-if="!usuario.is_active" ng-click="activar(usuario.id)">Activar</a>
                     </td>
                 </tr>
             </tbody>

@@ -269,9 +269,9 @@ def editarUsuario(request, idUsuario):
             user.groups.add(grupo)
         return HttpResponseRedirect(reverse('verUsuarios'))
     else:
-        # cursor = connection.cursor()
-        # cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
-        usuario = auth_user.objects.filter(auth_group = auth_user_groups.id).select_related()
+        cursor = connection.cursor()
+        cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
+        # usuario = auth_user.objects.filter(auth_group = auth_user_groups.id).select_related()
         usuario = dictfetchall(cursor)
         rol = request.user.groups.get().name
         return render(request, "admin/usuarios/editar/index.html", {'usuario': usuario, 'rol': rol})

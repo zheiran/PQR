@@ -7,5 +7,8 @@
 		$scope.guardar = function() {
 			document.editarPaso.submit();
 		};
+		$scope.volver = function () {
+			location = '{% url "verPasos" 101%}'.replace(/101/, $scope.proceso[0].id.toString());
+		};
 	});
 </script>

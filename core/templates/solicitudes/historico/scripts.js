@@ -14,5 +14,8 @@
 	  			return date[0]+'-'+date[1]+'-'+date[2];
 	  		}
 	  	};
+	  	$scope.volver = function () {
+			location = '{% url "home" %}';
+		};
 	});
 </script>

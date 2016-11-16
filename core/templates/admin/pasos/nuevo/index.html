@@ -6,6 +6,7 @@
 
 {% block contenido %}
 <div class="row" ng-controller="nuevoPasoController">
+<button class="btn btn-default" ng-click="volver()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Volver</button>
 	<h2>Nuevo paso para el proceso "[[proceso[0].nombre]]"</h2>
     <form method="post" name="nuevoPaso">
         {% csrf_token %}

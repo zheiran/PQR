@@ -5,5 +5,8 @@
 		$scope.guardar = function() {
 			document.editarUsuario.submit();
 		};
+		$scope.volver = function () {
+			location = '{% url "verUsuarios" %}';
+		};
 	});
 </script>

@@ -11,5 +11,8 @@
 		$scope.editar = function(id) {
 			location = '{% url "editarPaso" 101 102%}'.replace(/101/, $scope.proceso[0].id.toString()).replace(/102/, id.toString());
 		};
+		$scope.volver = function () {
+			location = '{% url "workflowList" %}';
+		};
 	});
 </script>

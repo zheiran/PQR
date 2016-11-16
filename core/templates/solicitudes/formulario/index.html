@@ -2,6 +2,7 @@
 
 {% block contenido %}
 <div ng-controller="formularioController" class="row">
+<button class="btn btn-default" ng-click="volver()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Volver</button>
     <form name="formularioForm" method="POST">
         {% csrf_token %}
         <div ng-if="comentarios_antiguos.length !== 0">

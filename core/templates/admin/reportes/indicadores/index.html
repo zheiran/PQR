@@ -24,7 +24,7 @@ tr:nth-child(even),th {
 	<h2>Indicadores</h2>
 	{% csrf_token %}
     <h3>Efectividad de cada proceso</h3>
-    <canvas id="bar" class="chart chart-bar" chart-data="dataPromedioDuraciones" chart-labels="labelsPromedioDuraciones" chart-series="seriesPromedioDuraciones" chart-options="optionsPromedioDuraciones"></canvas>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataPromedioDuraciones" chart-labels="labelsPromedioDuraciones" chart-series="seriesPromedioDuraciones" chart-colors="colorsPromedioDuraciones" chart-options="optionsPromedioDuraciones"></canvas>
     <div class="table-responsive">
         <table class="table tablaProcesos">
             <thead>
@@ -40,9 +40,25 @@ tr:nth-child(even),th {
                 </tr>
             </tbody>
         </table>
-    </div>
+    </div><br><br><br><br>
     <h3>Efectividad de cada agente</h3>
-    <canvas id="bar" class="chart chart-bar" chart-data="dataPromedioAgentes" chart-labels="labelsPromedioAgentes" chart-series="seriesPromedioAgentes" chart-options="optionsPromedioAgentes"></canvas>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataPromedioAgentes" chart-labels="labelsPromedioAgentes" chart-series="seriesPromedioAgentes" chart-colors="colorsPromedioAgentes" chart-options="optionsPromedioAgentes"></canvas>
+    <div class="table-responsive">
+        <table class="table tablaProcesos">
+            <thead>
+                <tr>
+                    <th>Id del Encargado</th>
+                    <th>Nombre del Encargado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="i in labelsPromedioAgentes">
+                    <td ng-show="[$index]!=0" ng-bind="labelsPromedioAgentes[$index]"></td>
+                    <td ng-show="[$index]!=0" ng-bind="nombresPromedioAgentes[$index]"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock%}
 

@@ -74,10 +74,9 @@ def registro(request):
 def home(request):
     cursor = connection.cursor()
     if request.user.groups.filter(name='Estudiante').exists():
-        # cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s", [request.user.id])
-        cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name, COUNT(sl.id) as contar FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s group by s.id, f.id, u.id", [request.user.id])
+        cursor.execute("SELECT s.id, s.fecha, s.fecha_inicio, s.respuesta, f.nombre as proceso, u.first_name, u.last_name, COUNT(sl.id) as contar FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE s.usuario_id = %s group by s.id, f.id, u.id", [request.user.id])
     elif request.user.groups.filter(name='Agente').exists():
-        cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE (sl.comentarios = '') IS NOT FALSE AND sl.usuario_id = %s", [request.user.id])
+        cursor.execute("SELECT s.id, s.fecha, s.fecha_inicio, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE (sl.comentarios = '') IS NOT FALSE AND sl.usuario_id = %s", [request.user.id])
     else:
         return HttpResponseRedirect(reverse('workflowList'))
     solicitudes = dictfetchall(cursor)
@@ -120,7 +119,7 @@ def nuevoWorkflow(request):
         return HttpResponseRedirect(reverse('workflowList'))  # Redirect after POST
     else:
         cursor = connection.cursor()
-        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        cursor.execute("SELECT u.id, u.first_name, u.last_name FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE g.name = 'Agente'")
         usuarios = dictfetchall(cursor)
     rol = request.user.groups.get().name
     return render(request, "admin/nuevoWorkflow/index.html", {'usuarios': usuarios, 'rol': rol})
@@ -164,7 +163,7 @@ def nuevoPaso(request, id):
         return HttpResponseRedirect(reverse('verPasos', args=[id]))  # Redirect after POST
     else:
         cursor = connection.cursor()
-        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        cursor.execute("SELECT u.id, u.first_name, u.last_name FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE g.name = 'Agente'")
         usuarios = dictfetchall(cursor)
         cursor = connection.cursor()
         cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [id])
@@ -195,7 +194,7 @@ def editarPaso(request, idWorkflow, idPaso):
         return HttpResponseRedirect(reverse('verPasos', args=[idWorkflow]))  # Redirect after POST
     else:
         cursor = connection.cursor()
-        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        cursor.execute("SELECT u.id, u.first_name, u.last_name FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE g.name = 'Agente'")
         usuarios = dictfetchall(cursor)
         cursor = connection.cursor()
         cursor.execute("SELECT id, nombre FROM modelos_flujo_de_trabajo WHERE id = %s", [idWorkflow])
@@ -273,7 +272,6 @@ def editarUsuario(request, idUsuario):
         # cursor = connection.cursor()
         # cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
         usuario = auth_user.objects.filter(auth_group = auth_user_groups.id).select_related()
-        print(usuario.auth_group.nombre)
         usuario = dictfetchall(cursor)
         rol = request.user.groups.get().name
         return render(request, "admin/usuarios/editar/index.html", {'usuario': usuario, 'rol': rol})
@@ -307,7 +305,7 @@ def editarWorkflow(request, idWorkflow):
         cursor.execute("SELECT f.id as procesoId, u.first_name, u.id as userId, u.last_name, f.nombre, f.publicado  FROM modelos_flujo_de_trabajo f INNER JOIN auth_user u ON u.id = f.usuario_id WHERE f.id = %s", [idWorkflow])
         workflow = dictfetchall(cursor)
         cursor = connection.cursor()
-        cursor.execute("SELECT id, first_name, last_name FROM auth_user")
+        cursor.execute("SELECT u.id, u.first_name, u.last_name FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE g.name = 'Agente'")
         usuarios = dictfetchall(cursor)
     rol = request.user.groups.get().name
     return render(request, "admin/workflowList/editarWorkflow/index.html", {'usuarios': usuarios, 'workflow': workflow, 'rol': rol})
@@ -328,27 +326,35 @@ def activarWorkflow(request, idWorkflow):
 
 @login_required
 def crearSolicitud(request, idProceso):
-    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, respuesta = '')
+    solicitud = Solicitudes(flujos_id = int(idProceso), usuario_id = request.user.id, respuesta = '', fecha_inicio = datetime.date.today())
     solicitud.save()
     return HttpResponseRedirect(reverse('formulario', args=[solicitud.id]))
 
 @login_required
 def formulario(request, idSolicitud):
+    rol = request.user.groups.get().name
+
     if Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).exists():
-        log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')
-        dataLog = serializers.serialize('json', [log[0],])
-        if len(log) > 1:
-            cursor = connection.cursor()
-            cursor.execute("SELECT sl.id, sl.comentarios, sl.fecha at time zone 'America/Bogota' as fecha, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN auth_user u ON u.id = sl.usuario_id WHERE sl.solicitudes_id = %s ORDER BY sl.id desc", [int(idSolicitud)])
-            comentarios_antiguos = dictfetchall(cursor)
-        else:
-            comentarios_antiguos = serializers.serialize('json', '')
-        if Pasos.objects.filter(id=int(log[0].pasos_id)).exists():
-            cursor = connection.cursor()
-            cursor.execute("SELECT p.*, u.first_name, u.last_name, f.nombre as proceso FROM modelos_pasos p INNER JOIN auth_user u ON u.id = p.usuario_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = p.flujos_id WHERE p.id = %s", [int(log[0].pasos_id)])
-            dataPaso = dictfetchall(cursor)
-        else:
+        if rol == 'Estudiante':
+            log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('id')
+            dataLog = serializers.serialize('json', [log[0],])
             dataPaso = serializers.serialize('json', '')
+            comentarios_antiguos = serializers.serialize('json', '')
+        else:
+            log = Solicitudes_logs.objects.filter(solicitudes_id = int(idSolicitud)).order_by('-id')
+            dataLog = serializers.serialize('json', [log[0],])
+            if len(log) > 1:
+                cursor = connection.cursor()
+                cursor.execute("SELECT sl.id, sl.comentarios, sl.fecha at time zone 'America/Bogota' as fecha, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN auth_user u ON u.id = sl.usuario_id WHERE sl.solicitudes_id = %s ORDER BY sl.id desc", [int(idSolicitud)])
+                comentarios_antiguos = dictfetchall(cursor)
+            else:
+                comentarios_antiguos = serializers.serialize('json', '')
+            if Pasos.objects.filter(id=int(log[0].pasos_id)).exists():
+                cursor = connection.cursor()
+                cursor.execute("SELECT p.*, u.first_name, u.last_name, f.nombre as proceso FROM modelos_pasos p INNER JOIN auth_user u ON u.id = p.usuario_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = p.flujos_id WHERE p.id = %s", [int(log[0].pasos_id)])
+                dataPaso = dictfetchall(cursor)
+            else:
+                dataPaso = serializers.serialize('json', '')
     else:
         solicitud = Solicitudes.objects.get(id=int(idSolicitud))
         log_nuevo = Solicitudes_logs(pasos_id = 0, solicitudes_id = int(idSolicitud), usuario_id = request.user.id, fecha = datetime.datetime.now(pytz.timezone('America/Bogota')))
@@ -356,17 +362,17 @@ def formulario(request, idSolicitud):
         dataLog = serializers.serialize('json', [log_nuevo, ])
         dataPaso = serializers.serialize('json', '')
         comentarios_antiguos = serializers.serialize('json', '')
-    rol = request.user.groups.get().name
     return render(request, "solicitudes/formulario/index.html", {'log': dataLog, 'paso': dataPaso, 'comentarios_antiguos': comentarios_antiguos, 'rol': rol})
 
 @login_required
 def enviarFormulario(request, idLog):
+    mi_correo = "sanator03@gmail.com"
+    # mi_correo = "santi.moreno03@hotmail.com"
     if request.method == 'POST':
         comentarios = request.POST['comentarios']
         log = Solicitudes_logs.objects.get(id=int(idLog))
         log.comentarios = comentarios
         log.ruta_archivos = request.POST['docfile']
-
         log.save()
         if Pasos.objects.filter(id=int(log.pasos_id)).exists():
             paso_antiguo = Pasos.objects.get(id=int(log.pasos_id))
@@ -383,9 +389,10 @@ def enviarFormulario(request, idLog):
             encargado = User.objects.get(id=int(proceso.usuario_id))
 
             body = 'Estimado usuario, <br> La solicitud con identificacion '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta informacion y a validar el caso. <br> Gracias.'
-            enviar_mensaje(usuario.email, 'Una nueva solicitud se le ha sido asignada', body)
-            enviar_mensaje(encargado.email, 'Una nueva solicitud se le ha sido asignada', body)
-            enviar_mensaje("sanator03@gmail.com", 'Una nueva solicitud se le ha sido asignada', body)
+            # print(mi_correo, usuario.email, encargado.email)
+            enviar_mensaje(mi_correo, 'Una nueva solicitud se le ha sido asignada', body)
+            enviar_mensaje(str(usuario.email), 'Una nueva solicitud se le ha sido asignada', body)
+            enviar_mensaje(str(encargado.email), 'Una nueva solicitud se le ha sido asignada', body)
         else:
             solicitud = Solicitudes.objects.get(id=int(log.solicitudes_id))
             solicitud.fecha = datetime.date.today()
@@ -396,9 +403,9 @@ def enviarFormulario(request, idLog):
             encargado = User.objects.get(id=int(proceso.usuario_id))
 
             body = 'Estimado usuario, <br> La solicitud  con identificacion '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.'
-            enviar_mensaje(encargado.email, 'Una solicitud ha sido resuelta', body)
-            enviar_mensaje(usuario.email, 'Una solicitud ha sido resuelta', body)
-            enviar_mensaje("sanator03@gmail.com", 'Una solicitud ha sido resuelta', body)
+            enviar_mensaje(mi_correo, 'Una solicitud ha sido resuelta', body)
+            enviar_mensaje(str(encargado.email), 'Una solicitud ha sido resuelta', body)
+            enviar_mensaje(str(usuario.email), 'Una solicitud ha sido resuelta', body)
     return HttpResponseRedirect(reverse('home'))
 
 @login_required
@@ -418,9 +425,12 @@ def devolverFormulario(request, idLog):
         encargado = User.objects.get(id=int(proceso.usuario_id))
 
         body = 'Estimado usuario, <br> La solicitud con identificacion '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta informacion y a validar el caso. <br> Gracias.'
-        enviar_mensaje(usuario.email, 'Una nueva solicitud se le ha sido devuelta', body)
-        enviar_mensaje(encargado.email, 'Una nueva solicitud se le ha sido devuelta', body)
-        enviar_mensaje("sanator03@gmail.com", 'Una nueva solicitud se le ha sido devuelta', body)
+        mi_correo = "sanator03@gmail.com"
+        # mi_correo = "santi.moreno03@hotmail.com"
+        # print(mi_correo, usuario.email, encargado.email)
+        enviar_mensaje(mi_correo, 'Una nueva solicitud se le ha sido devuelta', body)
+        enviar_mensaje(str(usuario.email), 'Una nueva solicitud se le ha sido devuelta', body)
+        enviar_mensaje(str(encargado.email), 'Una nueva solicitud se le ha sido devuelta', body)
     return HttpResponseRedirect(reverse('home'))
 
 
@@ -477,7 +487,7 @@ def guardarFormulario(request, idLog):
 @login_required
 def solicitudesPasadas(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE sl.usuario_id = %s GROUP BY s.id, f.nombre, u.first_name, u.last_name ORDER BY s.id desc", [request.user.id])
+    cursor.execute("SELECT s.id, s.fecha, s.fecha_inicio, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes_logs sl INNER JOIN modelos_solicitudes s ON s.id = sl.solicitudes_id INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE sl.usuario_id = %s GROUP BY s.id, f.nombre, u.first_name, u.last_name ORDER BY s.id desc", [request.user.id])
     solicitudes = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")
@@ -492,7 +502,7 @@ def solicitudesPasadas(request):
 @login_required
 def solicitudesEncargadas(request):
     cursor = connection.cursor()
-    cursor.execute("SELECT s.id, s.fecha, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE f.usuario_id = %s", [request.user.id])
+    cursor.execute("SELECT s.id, s.fecha, s.fecha_inicio, s.respuesta, f.nombre as proceso, u.first_name, u.last_name FROM modelos_solicitudes s INNER JOIN modelos_flujo_de_trabajo f ON f.id = s.flujos_id INNER JOIN auth_user u ON u.id = s.usuario_id WHERE f.usuario_id = %s", [request.user.id])
     solicitudes = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")

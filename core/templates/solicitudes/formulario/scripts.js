@@ -5,6 +5,10 @@
 	  	$scope.comentarios = $scope.log[0].fields.comentarios;
 	  	$scope.mensaje = '';
 	  	$scope.comentarios_antiguos = decodeEntities('{{ comentarios_antiguos }}');
+	  	$scope.mostrarBotones = true;
+	  	if($scope.comentarios !== null){
+	  		$scope.mostrarBotones = false;
+	  	}
 	  	$scope.guardarEnviar = function() {
 	  		if ($scope.comentarios !== null && $scope.comentarios !== '') {
 	  			$scope.mensaje = '';

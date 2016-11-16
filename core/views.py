@@ -82,7 +82,7 @@ def home(request):
         return HttpResponseRedirect(reverse('workflowList'))
     solicitudes = dictfetchall(cursor)
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo WHERE publicado = TRUE")
+    cursor.execute("SELECT * FROM modelos_flujo_de_trabajo")
     procesos = dictfetchall(cursor)
     cursor = connection.cursor()
     cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [request.user.id])
@@ -270,8 +270,10 @@ def editarUsuario(request, idUsuario):
             user.groups.add(grupo)
         return HttpResponseRedirect(reverse('verUsuarios'))
     else:
-        cursor = connection.cursor()
-        cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
+        # cursor = connection.cursor()
+        # cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email, u.username, coalesce(g.name, 'no tiene un grupo asignado') as grupo FROM auth_user u LEFT JOIN auth_user_groups ug ON ug.user_id = u.id LEFT JOIN auth_group g ON g.id = ug.group_id WHERE u.id = %s", [idUsuario])
+        usuario = auth_user.objects.filter(auth_group = auth_user_groups.id).select_related()
+        print(usuario.auth_group.nombre)
         usuario = dictfetchall(cursor)
         rol = request.user.groups.get().name
         return render(request, "admin/usuarios/editar/index.html", {'usuario': usuario, 'rol': rol})
@@ -378,7 +380,7 @@ def enviarFormulario(request, idLog):
             proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
             encargado = User.objects.get(id=int(proceso.usuario_id))
 
-            body = 'Estimado usuario, <br> La solicitud con identificación '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
+            body = 'Estimado usuario, <br> La solicitud con identificacion '+str(log.solicitudes_id)+' se le ha sido asignada con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta informacion y a validar el caso. <br> Gracias.'
             enviar_mensaje(usuario.email, 'Una nueva solicitud se le ha sido asignada', body)
             enviar_mensaje(encargado.email, 'Una nueva solicitud se le ha sido asignada', body)
             enviar_mensaje("sanator03@gmail.com", 'Una nueva solicitud se le ha sido asignada', body)
@@ -391,7 +393,7 @@ def enviarFormulario(request, idLog):
             proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
             encargado = User.objects.get(id=int(proceso.usuario_id))
 
-            body = 'Estimado usuario, <br> La solicitud  con identificación '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.'
+            body = 'Estimado usuario, <br> La solicitud  con identificacion '+str(log.solicitudes_id)+' ha sido satsfactoriamente resuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Esperamos su solicitud haya sido resuelta satisfactoriamente. <br> Gracias.'
             enviar_mensaje(encargado.email, 'Una solicitud ha sido resuelta', body)
             enviar_mensaje(usuario.email, 'Una solicitud ha sido resuelta', body)
             enviar_mensaje("sanator03@gmail.com", 'Una solicitud ha sido resuelta', body)
@@ -413,7 +415,7 @@ def devolverFormulario(request, idLog):
         proceso = Flujo_de_trabajo.objects.get(id=int(solicitud.flujos_id))
         encargado = User.objects.get(id=int(proceso.usuario_id))
 
-        body = 'Estimado usuario, <br> La solicitud con identificación '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta información y a validar el caso. <br> Gracias.'
+        body = 'Estimado usuario, <br> La solicitud con identificacion '+str(log.solicitudes_id)+' se le ha sido devuelta con el siguiente comentario: <br><b>'+str(comentarios)+'</b><br>Agradecemos entre a verificar esta informacion y a validar el caso. <br> Gracias.'
         enviar_mensaje(usuario.email, 'Una nueva solicitud se le ha sido devuelta', body)
         enviar_mensaje(encargado.email, 'Una nueva solicitud se le ha sido devuelta', body)
         enviar_mensaje("sanator03@gmail.com", 'Una nueva solicitud se le ha sido devuelta', body)

@@ -2,6 +2,7 @@
 
 {% block contenido %}
 <div class="row" ng-controller="editarUsuarioController">
+<button class="btn btn-default" ng-click="volver()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Volver</button>
 	<h2>Editar información del usuario "[[usuario[0].first_name]] [[usuario[0].last_name]]"</h2>
     <form method="post" name="editarUsuario">
         {% csrf_token %}

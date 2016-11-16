@@ -6,5 +6,8 @@
 		$scope.guardar = function() {
 			document.editarWorkflow.submit();
 		};
+		$scope.volver = function () {
+			location = '{% url "workflowList" %}';
+		};
 	});
 </script>

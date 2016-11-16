@@ -42,11 +42,12 @@
                     <td ng-if="usuario[0].grupo === 'Estudiante'">[[(solicitud.respuesta !== '')?solicitud.respuesta:'Aun no tiene una respuesta']]</td>
                     <td>[[solicitud.proceso]]</td>
                     <td>[[solicitud.first_name]] [[solicitud.last_name]]</td>
-                    <td ng-if="usuario[0].grupo === 'Agente'"><button class="btn btn-warning" ng-click="historicoSolicitud(solicitud.id)">Histórico</button>
+                    <td ng-if="usuario[0].grupo === 'Agente' || solicitud.contar < 2"><button class="btn btn-warning" ng-if="usuario[0].grupo === 'Agente'" ng-click="historicoSolicitud(solicitud.id)">Histórico</button>
                     {% if pasadas or encargadas %}
 
                     {% else %}
-                        <button class="btn btn-info" ng-click="abrirSolicitud(solicitud.id)">Abrir</button>
+                        <button class="btn btn-info" ng-if="usuario[0].grupo === 'Agente' || solicitud.contar < 2" ng-click="abrirSolicitud(solicitud.id)">Abrir</button>
+                        <button class="btn btn-danger" ng-if="solicitud.contar < 2" ng-click="eliminarSolicitud(solicitud.id)">Descartar</button>
                     {% endif %}
 
                     </td>

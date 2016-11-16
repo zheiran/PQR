@@ -45,7 +45,11 @@
 	  		}else{
 	  			$scope.mensaje = 'Este formulario no se puede guardar debido a que no ha relizado ningun comentario.';
 	  		};
-	  	}
+	  	};
+
+	  	$scope.volver = function () {
+			location = '{% url "home" %}';
+		};
 	  	
 	});
 </script>

@@ -13,6 +13,10 @@
 	  		location = '{% url "historico" 101%}'.replace(/101/, id.toString());
 	  	};
 
+	  	$scope.eliminarSolicitud = function (id) {
+	  		location = '{% url "eliminarSolicitud" 101%}'.replace(/101/, id.toString());
+	  	};
+
 	  	$scope.fechaLegible = function(fecha) {
 	  		if (fecha) {
 	  			date = decodeDates(fecha);

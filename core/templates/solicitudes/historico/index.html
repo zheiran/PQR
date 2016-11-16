@@ -37,7 +37,7 @@
 		        </thead>
 		        <tbody ng-repeat="log in logs">
 	            	<tr>
-		                <td ng-bind="log.paso=='' ? 'Petición' : log.paso">[[]]</td>
+		                <td ng-bind="log.paso==null ? 'Petición' : log.paso"></td>
 		                <td>[[log.agente]]</td>
 		                <td ng-bind="fechaLegible(log.fecha)"></td>
 		                <td ng-bind="fechaLegible(logs[$index + 1].fecha)"></td>

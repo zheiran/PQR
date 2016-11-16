@@ -105,15 +105,15 @@
 		});
 
 		//Valores relacionados a los porcentajes de la gráfica de tickets abiertos y cerrados
-		porcenOpen = openTicket*100/(openTicket+closeTicket);
-		porcenClose = closeTicket*100/(openTicket+closeTicket);
+		porcenOpen = (openTicket*100/(openTicket+closeTicket)).toFixed(2);
+		porcenClose = (closeTicket*100/(openTicket+closeTicket)).toFixed(2);
 	  	$scope.labelsPie = ['Abiertos ' + porcenOpen + '% ', 'Cerrados ' + porcenClose + '% '];
   		$scope.dataPie = [openTicket, closeTicket];
   		$scope.colorsPie = ['#E13232', '#10CD5E'];
 
 		//Valores relacionados a los porcentajes de la gráfica de tickets efectivos y no efectivos
-		porcenEfect = TicketEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
-		porcenNoEfect = TicketNoEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
+		porcenEfect = (TicketEfectivo*100/(TicketEfectivo+TicketNoEfectivo)).toFixed(2);
+		porcenNoEfect = (TicketNoEfectivo*100/(TicketEfectivo+TicketNoEfectivo)).toFixed(2);
 	  	$scope.labelsEfectividadPie = ['No Eficientes ' + porcenNoEfect + '% ', 'Eficientes ' + porcenEfect + '% '];
   		$scope.dataEfectividadPie = [TicketNoEfectivo, TicketEfectivo];
   		$scope.colorsEfectividadPie = ['#E13232', '#46bfbd'];

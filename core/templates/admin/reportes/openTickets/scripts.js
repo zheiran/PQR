@@ -47,7 +47,7 @@
 		
 	  	//Recibir Informacion desde python
 	  	$scope.solicitudes = decodeEntities('{{ solicitudes }}');
-	  	console.log($scope.solicitudes);
+	  	
 	  	//Función para imprimir la fecha de mejor forma
 	  	$scope.fechaLegible = function(fecha) {
 	  		if (typeof fecha == 'undefined' || fecha == null) {
@@ -62,7 +62,7 @@
 	  		if ( entry.fecha_fin == 'undefined' || entry.fecha_fin == null) {
 	  			var fecha_inicio = decodeDates(entry.fecha_inicio);
 	  			var date1 = new Date(fecha_inicio[0], fecha_inicio[1]-1, fecha_inicio[2], fecha_inicio[3], fecha_inicio[4]),
-	  				date2 = new Date(2016,10,12);
+	  				date2 = new Date();
 				var diasHabiles = days_between(date1, date2);
 				$scope.solicitudes[index].dias = diasHabiles;
 	  		} else {
@@ -105,15 +105,15 @@
 		});
 
 		//Valores relacionados a los porcentajes de la gráfica de tickets abiertos y cerrados
-		porcenOpen = openTicket*100/(openTicket+closeTicket);
-		porcenClose = closeTicket*100/(openTicket+closeTicket);
+		porcenOpen = (openTicket*100/(openTicket+closeTicket)).toFixed(2);
+		porcenClose = (closeTicket*100/(openTicket+closeTicket)).toFixed(2);
 	  	$scope.labelsPie = ['Abiertos ' + porcenOpen + '% ', 'Cerrados ' + porcenClose + '% '];
   		$scope.dataPie = [openTicket, closeTicket];
   		$scope.colorsPie = ['#E13232', '#10CD5E'];
 
 		//Valores relacionados a los porcentajes de la gráfica de tickets efectivos y no efectivos
-		porcenEfect = TicketEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
-		porcenNoEfect = TicketNoEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
+		porcenEfect = (TicketEfectivo*100/(TicketEfectivo+TicketNoEfectivo)).toFixed(2);
+		porcenNoEfect = (TicketNoEfectivo*100/(TicketEfectivo+TicketNoEfectivo)).toFixed(2);
 	  	$scope.labelsEfectividadPie = ['No Eficientes ' + porcenNoEfect + '% ', 'Eficientes ' + porcenEfect + '% '];
   		$scope.dataEfectividadPie = [TicketNoEfectivo, TicketEfectivo];
   		$scope.colorsEfectividadPie = ['#E13232', '#46bfbd'];

@@ -1,19 +1,12 @@
 <script>
 	angularApp.controller('reporteOpenTicketController', function($scope) {
 		//Definir Variables
-	  	var openTicket = 0,
-	  		closeTicket = 0,
-	  		TicketEfectivo = 0,
-	  		TicketNoEfectivo = 0,
-	  		porcenOpen = 0,
-	  		porcenClose = 0,
-	  		diasTicket = new Array(),
-	  		diferentesDias = new Array('0'),
-	  		numeroDias = new Array('0'),
-	  		sumatoriaDias = 0,
-	  		promedioDias = 0,
-	  		idTicket = new Array('0'),
-	  		duracionTicket = new Array('0');
+	  	var diasUsadosProceso = new Array(),
+	  		numeroDeProcesos = new Array(),
+	  		valorEsperadoProcesos = new Array('0'),
+	  		diferentesProcesos = new Array('0'),
+	  		nombreProcesos = new Array('0'),
+	  		promedioDiasProceso = new Array('0');
 	  	
 	  	//Funcion para Calcular los días habiles entre fechas
 		function days_between(date1, date2) {
@@ -61,7 +54,7 @@
 	  		if ( entry.fecha_fin == 'undefined' || entry.fecha_fin == null) {
 	  			var fecha_inicio = decodeDates(entry.fecha_inicio);
 	  			var date1 = new Date(fecha_inicio[0], fecha_inicio[1]-1, fecha_inicio[2], fecha_inicio[3], fecha_inicio[4]),
-	  				date2 = new Date(2016,10,12);
+	  				date2 = new Date();
 				var diasHabiles = days_between(date1, date2);
 				$scope.solicitudes[index].dias = diasHabiles;
 	  		} else {
@@ -73,61 +66,28 @@
 				$scope.solicitudes[index].dias = diasHabiles;
 	  		}
 
-	  		//Suma de tickets abiertos y cerrados
-			if (entry.respuesta!='') {
-				closeTicket ++; 
+	  		//Sumatoria de días habiles y usados
+	  		if (typeof diasUsadosProceso[$scope.solicitudes[index].procesoid]  == 'undefined') {
+				diasUsadosProceso[$scope.solicitudes[index].procesoid] = $scope.solicitudes[index].dias;
+				numeroDeProcesos[$scope.solicitudes[index].procesoid] = 1;
+				valorEsperadoProcesos.push($scope.solicitudes[index].esperado);
+				diferentesProcesos.push('Proceso #'+$scope.solicitudes[index].procesoid);
+				nombreProcesos.push($scope.solicitudes[index].proceso);
 			}
 			else {
-				openTicket ++;
+				diasUsadosProceso[$scope.solicitudes[index].procesoid] += $scope.solicitudes[index].dias;
+				numeroDeProcesos[$scope.solicitudes[index].procesoid] ++;
 			}
-
-	  		//Suma de tickets eficaces
-			if ( diasHabiles > entry.esperado ) {
-				TicketNoEfectivo ++; 
-			}
-			else {
-				TicketEfectivo ++;
-			}
-
-			//Cantidades de tickets abiertos por la misma cantidad de días
-			if (typeof diasTicket[diasHabiles]  == 'undefined') {
-				diasTicket[diasHabiles] = 1;
-			}
-			else {
-				diasTicket[diasHabiles] ++;
-			}
-			//Sumatoria de días
-			sumatoriaDias += diasHabiles;
-			//Listado de tickets y sus días
-			idTicket.push('Solicitud #'+entry.id);
-  			duracionTicket.push(diasHabiles);
 		});
 
-		//Valores relacionados a los porcentajes de la gráfica de tickets abiertos y cerrados
-		porcenOpen = openTicket*100/(openTicket+closeTicket);
-		porcenClose = closeTicket*100/(openTicket+closeTicket);
-	  	$scope.labelsPie = ['Abiertos ' + porcenOpen + '% ', 'Cerrados ' + porcenClose + '% '];
-  		$scope.dataPie = [openTicket, closeTicket];
-  		$scope.colorsPie = ['#E13232', '#10CD5E'];
 
-		//Valores relacionados a los porcentajes de la gráfica de tickets efectivos y no efectivos
-		porcenEfect = TicketEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
-		porcenNoEfect = TicketNoEfectivo*100/(TicketEfectivo+TicketNoEfectivo);
-	  	$scope.labelsEfectividadPie = ['No Eficientes ' + porcenNoEfect + '% ', 'Eficientes ' + porcenEfect + '% '];
-  		$scope.dataEfectividadPie = [TicketNoEfectivo, TicketEfectivo];
-  		$scope.colorsEfectividadPie = ['#E13232', '#46bfbd'];
-  		//Valores relacionados a la grafica de solicitudesXdias
-  		diasTicket.forEach(function(entry,index) {
-  			diferentesDias.push(index + ' Días ');
-  			numeroDias.push(entry);
+		diasUsadosProceso.forEach(function(entry,index) {
+  			promedioDiasProceso.push((diasUsadosProceso[index]/numeroDeProcesos[index]).toFixed(2));
   		});
-		$scope.labelsDias = diferentesDias;
-		$scope.dataDias = numeroDias;
-		//Valores relacionados a la duracion de los tickets
-  		promedioDias = sumatoriaDias/$scope.solicitudes.length;
-		idTicket.push('Promedio');
-		duracionTicket.push(promedioDias);
-		$scope.labelsTicketDuracion = idTicket;
-		$scope.dataTicketDuracion = duracionTicket;
+		$scope.seriesPromedioDuraciones = ['Promedio Días Utilizados', 'Días Esperados'];
+		$scope.labelsPromedioDuraciones = diferentesProcesos;
+		$scope.nombresPromedioDuraciones = nombreProcesos;
+		$scope.dataPromedioDuraciones = [promedioDiasProceso,valorEsperadoProcesos];
+		$scope.optionsPromedioDuraciones = { legend: { display: true } };
 	});
 </script>

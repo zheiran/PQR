@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% include "admin/reportes/indicadores/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+<style>
+tr:nth-child(even),th {
+    background-color: #b9bbff;
+}
+.tablaProcesos tr:nth-child(odd),th {
+    background-color: #b9bbff;
+}
+.tablaProcesos tr:nth-child(even),th {
+    background-color: #ffffff;
+}
+.table-responsive {
+    max-height: 410px;
+    overflow: scroll;
+}
+</style>
+<div ng-controller="reporteOpenTicketController">
+	<h2>Indicadores</h2>
+	{% csrf_token %}
+    <h3>Efectividad de cada proceso</h3>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataPromedioDuraciones" chart-labels="labelsPromedioDuraciones" chart-series="seriesPromedioDuraciones" chart-colors="colorsPromedioDuraciones" chart-options="optionsPromedioDuraciones"></canvas>
+    <div class="table-responsive">
+        <table class="table tablaProcesos">
+            <thead>
+                <tr>
+                    <th>Id del proceso</th>
+                    <th>Nombre del proceso</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="i in labelsPromedioDuraciones">
+                    <td ng-show="[$index]!=0" ng-bind="labelsPromedioDuraciones[$index]"></td>
+                    <td ng-show="[$index]!=0" ng-bind="nombresPromedioDuraciones[$index]"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div><br><br><br><br>
+    <h3>Efectividad de cada agente</h3>
+    <canvas id="bar" class="chart chart-bar" chart-data="dataPromedioAgentes" chart-labels="labelsPromedioAgentes" chart-series="seriesPromedioAgentes" chart-colors="colorsPromedioAgentes" chart-options="optionsPromedioAgentes"></canvas>
+    <div class="table-responsive">
+        <table class="table tablaProcesos">
+            <thead>
+                <tr>
+                    <th>Id del Encargado</th>
+                    <th>Nombre del Encargado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="i in labelsPromedioAgentes">
+                    <td ng-show="[$index]!=0" ng-bind="labelsPromedioAgentes[$index]"></td>
+                    <td ng-show="[$index]!=0" ng-bind="nombresPromedioAgentes[$index]"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "admin/reportes/indicadores/scripts.js" %}
+{% endblock%}

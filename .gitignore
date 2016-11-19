@@ -1,0 +1,5 @@
+/proyectoGrado/settings/local.py
+.vagrant/
+__pycache__/
+*.pyc
+PG/

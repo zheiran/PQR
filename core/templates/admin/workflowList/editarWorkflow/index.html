@@ -1,0 +1,32 @@
+{% extends "base/base.html" %}
+
+{% block contenido_estilos %}
+{% endblock%}
+
+{% block contenido %}
+<div class="row" ng-controller="editarWorkflowController">
+<button class="btn btn-default" ng-click="volver()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Volver</button>
+    <h2>Editar workflow</h2>
+    <form method="post" name="editarWorkflow">
+    {% csrf_token %}
+        <div class="form-group col-md-6">
+            <label for="usuario">Responsable: </label>
+            <select id="usuario" ng-model="usuario" name="usuario" class="form-control" ng-init="usuario = workflow[0].userid.toString()">
+                <option value="">--Selecciona un responsable--</option>
+                <option ng-repeat="usuario in usuarios" value="[[usuario.id]]" required>[[usuario.first_name]] [[usuario.last_name]]</option>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="nombre">Nombre: </label>
+            <input type="text" name="nombre" id="nombre" ng-model="nombre" class="form-control" ng-init="nombre = workflow[0].nombre" required>
+        </div>
+        <div class="form-group col-md-6">
+            <button class="btn btn-success" type="submit" ng-click="guardar()">Guardar</button>
+        </div>
+    </form>
+</div>
+{% endblock%}
+
+{% block contenido_javascript %}
+{% include "admin/workflowList/editarWorkflow/scripts.js" %}
+{% endblock%}

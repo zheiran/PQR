@@ -1,0 +1,27 @@
+{% extends 'base/base.html' %}
+
+{% block contenido_estilos %}
+{% include "admin/solicitudesAgente/estilos.css" %}
+{% endblock%}
+
+{% block contenido %}
+    <div class="row" ng-controller="solicitudesAgenteController">
+        <h2>Solicitudes asignadas al agente (Nombre del agente)</h2>
+        <div class="table-responsive">
+            <table border="1">
+                <tr>
+                    <td>Número</td>
+                    <td>Asunto</td>
+                </tr>
+                <tr ng-repeat="solicitud in solicitudes">
+                    <td>[[0]]</td>
+                    <td><a href="#"></a>[[1]]</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block contenido_javascript %}
+{% include "admin/solicitudesAgente/scripts.js" %}
+{% endblock%}
